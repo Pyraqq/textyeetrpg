@@ -38,7 +38,7 @@ while EChoice == True:
 		EChoice = False
 	elif EnemyChoice == 'GOBLIN':
 		EATK = 2
-		EXP = 15
+		EHP = 15
 		EXPGain = 10
 		EChoice = False
 	else:
