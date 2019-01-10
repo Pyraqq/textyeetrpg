@@ -4,6 +4,7 @@ import random
 print('Choose your class:')
 print('BERSERKER (ATK = 2, DEF = 1, HP = 15), PROTECTOR (ATK = 1, DEF = 2, HP = 20)')
 
+#Stats
 EXP = 0
 LVL = 1
 
@@ -19,7 +20,7 @@ while CChoice == True:
 	elif ClassChoice == 'PROTECTOR':
 		PATK = 1
 		PDEF = 2
-		PHP = 20
+		PHP = 15
 		CChoice = False
 	else:
 		print('Please input the right class name:')
@@ -37,37 +38,47 @@ while EChoice == True:
 		EChoice = False
 	elif EnemyChoice == 'GOBLIN':
 		EATK = 2
-		EHP = 15
-		EXPGain = 10
+		EXP = 15
+		EXPGAIN = 10
 		EChoice = False
 	else:
 		print('Please input the right enemy name:')
 		
-#Fight
-print('What should I do? Current Enemy: ' + EnemyChoice + ' Enemy HP: ' + str(EHP))
-print('ATTACK, DEFEND')
-PATKCALC = 0 #Your Attack value
-PDEFCALC = 0 #Your Defense value
-EATKCALC = 0 #Enemie's Attack value
-while EHP > 0:
-	FightChoice = input()
-	if FightChoice == 'ATTACK':
-		PATKCALC = random.randint(0, PATK)
-		if PATKCALC == 0:
-			print('You missed your attack!')
-			input() #wip
+#Fight code
+def FightPhase():
+	global PATK
+	global PHP
+	global PHP
+	global EATK
+	global EHP
+	global EXPGain
+	while EHP > 0:
+		print('What should I do? Current Enemy: ' + EnemyChoice + ' Enemy HP: ' + str(EHP) + ' Your HP: ' + str(PHP))
+		print('ATTACK, DEFEND')
+		PATKCALC = 0 #Your Attack value
+		PDEFCALC = 0 #Your Defense value
+		EATKCALC = 0 #Enemy's Attack value
+		FightChoice = input()
+		if FightChoice == 'ATTACK':
+			PATKCALC = random.randint(0, PATK)
+			if PATKCALC == 0:
+				EATKCALC = random.randint(0, EATK)
+				PHP = PHP - EATKCALC
+				print('You missed your attack, and the enemy hit you for ' + str(EATKCALC) + ' damage!')
+			else:
+				EHP = EHP - PATKCALC
+				print('You hit your an enemy, and dealt ' + str(PATKCALC) + ' damage!')
+				PHP = PHP - EATKCALC
+				print('The enemy dealt ' + str(EATKCALC) + ' damage!')
+		elif FightChoice == 'DEFEND':
+			PDEFCALC = random.randint(0, PDEF)
+			if PDEFCALC == 0:
+				PHP = PHP - EATKCALC
+				print('You were too slow, and the enemy hit you for ' + str(EATKCALC) + ' damage!')
+			else:
+				PHP = PHP - (PATKCALC - PDEFCALC)
+				print('You defended against an enemy, and deflected ' + str(PDEFCALC) + ' damage!')
 		else:
-			EHP = EHP - PATKCALC
-			print('You hit your an enemy, and dealt ' + str(PATKCALC) + ' damage!')
-			input() #wip
-	elif FightChoice == 'DEFEND':
-		PDEFCALC = random.randint(0, PDEF)
-		if PDEFCALC == 0:
-			print('You were too slow, and the enemy hit you!')
-			input() #wip
-		else:
-			PHP = PHP - (PATKCALC - PDEFCALC)
-			print('You defended against an enemy, and deflected ' + str(PDEFCALC) + ' damage!')
-			input() #wip
-	else:
-		print('Please input the right command:')
+			print('Please input the right command:')
+			
+FightPhase() #Calling the fight phase
