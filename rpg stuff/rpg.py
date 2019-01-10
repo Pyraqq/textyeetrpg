@@ -39,7 +39,7 @@ while EChoice == True:
 	elif EnemyChoice == 'GOBLIN':
 		EATK = 2
 		EXP = 15
-		EXPGAIN = 10
+		EXPGain = 10
 		EChoice = False
 	else:
 		print('Please input the right enemy name:')
