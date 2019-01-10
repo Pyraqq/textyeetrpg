@@ -48,7 +48,7 @@ while EChoice == True:
 def FightPhase():
 	global PATK
 	global PHP
-	global PHP
+	global PDEF
 	global EATK
 	global EHP
 	global EXPGain
