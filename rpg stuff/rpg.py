@@ -59,10 +59,10 @@ def FightPhase():
 		PDEFCALC = 0 #Your Defense value
 		EATKCALC = 0 #Enemy's Attack value
 		FightChoice = input()
-		if FightChoice == 'ATTACK':
+		if FightChoice == 'ATTACK': #attack option
 			PATKCALC = random.randint(0, PATK)
+			EATKCALC = random.randint(0, EATK)
 			if PATKCALC == 0:
-				EATKCALC = random.randint(0, EATK)
 				PHP = PHP - EATKCALC
 				print('You missed your attack, and the enemy hit you for ' + str(EATKCALC) + ' damage!')
 			else:
@@ -70,14 +70,20 @@ def FightPhase():
 				print('You hit your an enemy, and dealt ' + str(PATKCALC) + ' damage!')
 				PHP = PHP - EATKCALC
 				print('The enemy dealt ' + str(EATKCALC) + ' damage!')
-		elif FightChoice == 'DEFEND':
+		elif FightChoice == 'DEFEND': #defend option
 			PDEFCALC = random.randint(0, PDEF)
+			EATKCALC = random.randint(0, EATK)
 			if PDEFCALC == 0:
 				PHP = PHP - EATKCALC
 				print('You were too slow, and the enemy hit you for ' + str(EATKCALC) + ' damage!')
 			else:
-				PHP = PHP - (PATKCALC - PDEFCALC)
-				print('You defended against an enemy, and deflected ' + str(PDEFCALC) + ' damage!')
+				if PDEFCALC > EATKCALC:
+					PDEFCALC = EATKCALC
+					PHP = PHP - (EATKCALC - PDEFCALC)
+					print('You defended against an enemy, and deflected ' + str(PDEFCALC) + ' damage!')
+				else:
+					PHP = PHP - (EATKCALC - PDEFCALC)
+					print('You defended against an enemy, and deflected ' + str(PDEFCALC) + ' damage!')
 		else:
 			print('Please input the right command:')
 			
