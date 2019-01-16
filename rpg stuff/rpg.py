@@ -1,58 +1,71 @@
 import random
 
-#Beginning question.
-print('Choose your class:')
-print('BERSERKER (ATK = 2, DEF = 1, HP = 15), PROTECTOR (ATK = 1, DEF = 2, HP = 20)')
-
 #Stats
-EXP = 0
 LVL = 1
+LVLRequirements = 25 * LVL + 5 * LVL
+EXP = -LVLRequirements
+PHP = 0
+PATK = 0
+PDEF = 0
+EHP = 0
+EATK = 0
+EXPGain = 0
+EnemyChoice = '0'
 
-#Class Choice
-CChoice = True
-while CChoice == True:
-	ClassChoice = input()
-	if ClassChoice == 'BERSERKER':
-		PATK = 2
-		PDEF = 1
-		PHP = 15
-		CChoice = False
-	elif ClassChoice == 'PROTECTOR':
-		PATK = 1
-		PDEF = 2
-		PHP = 15
-		CChoice = False
-	else:
-		print('Please input the right class name:')
-
-#Enemy Choice
-print('Choose an enemy to fight:')
-print('RAT, GOBLIN')
-EChoice = True
-while EChoice == True:
-	EnemyChoice = input()
-	if EnemyChoice == 'RAT':
-		EATK = 1
-		EHP = 7
-		EXPGain = 5
-		EChoice = False
-	elif EnemyChoice == 'GOBLIN':
-		EATK = 2
-		EHP = 15
-		EXPGain = 10
-		EChoice = False
-	else:
-		print('Please input the right enemy name:')
-		
-#Fight code
-def FightPhase():
+def CharacterChoice(): #Class choice function
 	global PATK
-	global PHP
 	global PDEF
+	global PHP
+	print('Choose your class:')
+	print('BERSERKER (ATK = 2, DEF = 1, HP = 15), PROTECTOR (ATK = 1, DEF = 2, HP = 20)')
+	CChoice = True
+	while CChoice == True:
+		ClassChoice = input()
+		if ClassChoice == 'BERSERKER':
+			PATK = 2
+			PDEF = 1
+			PHP = 15
+			CChoice = False
+		elif ClassChoice == 'PROTECTOR':
+			PATK = 1
+			PDEF = 2
+			PHP = 15
+			CChoice = False
+		else:
+			print('Please input the right class name:')
+	return PATK and PDEF and PHP
+
+def BadPlayerChoice(): #Enemy Choice function
 	global EATK
 	global EHP
 	global EXPGain
+	print('Choose an enemy to fight:')
+	print('RAT, GOBLIN')
+	EChoice = True
+	while EChoice == True:
+		EnemyChoice = input()
+		if EnemyChoice == 'RAT':
+			EATK = 1
+			EHP = 7
+			EXPGain = 5
+			EChoice = False
+		elif EnemyChoice == 'GOBLIN':
+			EATK = 2
+			EHP = 15
+			EXPGain = 10
+			EChoice = False
+		else:
+			print('Please input the right enemy name:')
+	return EATK and EHP and EXPGain
+
+def FightPhase(): #Fight function
+	global EHP
+	global PHP
+	global EXP
 	while EHP > 0:
+		if PHP <= 0:
+			print('You died!')
+			break
 		print('What should I do? Current Enemy: ' + EnemyChoice + ' Enemy HP: ' + str(EHP) + ' Your HP: ' + str(PHP))
 		print('ATTACK, DEFEND')
 		PATKCALC = 0 #Your Attack value
@@ -86,5 +99,14 @@ def FightPhase():
 					print('You defended against an enemy, and deflected ' + str(PDEFCALC) + ' damage!')
 		else:
 			print('Please input the right command:')
-			
-FightPhase() #Calling the fight phase
+	else:
+		EXP = EXP + EXPGain
+		print('You won the fight! You gained ' + str(EXPGain) + ' EXP! Your current EXP = ' + str(EXP + LVLRequirements) + '.')
+		if EXP >= 0:
+			LVL = LVL + 1
+			EXP = EXP - LVLRequirements
+			print('You leveled up! You are now LVL ' + str(LVL) + '!')
+
+CharacterChoice()
+BadPlayerChoice()
+FightPhase()
