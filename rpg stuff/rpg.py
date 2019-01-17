@@ -39,6 +39,7 @@ def BadPlayerChoice(): #Enemy Choice function
 	global EATK
 	global EHP
 	global EXPGain
+	global EnemyChoice
 	print('Choose an enemy to fight:')
 	print('RAT, GOBLIN')
 	EChoice = True
@@ -56,7 +57,7 @@ def BadPlayerChoice(): #Enemy Choice function
 			EChoice = False
 		else:
 			print('Please input the right enemy name:')
-	return EATK and EHP and EXPGain
+	return EATK and EHP and EXPGain and EnemyChoice
 
 def FightPhase(): #Fight function
 	global EHP
