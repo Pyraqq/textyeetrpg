@@ -23,14 +23,14 @@ def CharacterChoice():
 	print(ClassInfo)
 	CChoice = True
 	while CChoice == True:
-		ClassChoice = input()
-		if ClassChoice == 'BERSERKER':
+		ClassChoice = input().lower()
+		if ClassChoice == 'berserker':
 			PATK = 2
 			PDEF = 1
 			PHP = 15
 			PHPActive = 15
 			CChoice = False
-		elif ClassChoice == 'PROTECTOR':
+		elif ClassChoice == 'berserker':
 			PATK = 1
 			PDEF = 2
 			PHP = 15
@@ -52,13 +52,13 @@ def BadPlayerChoice():
 	print(EnemyInfo)
 	EChoice = True
 	while EChoice == True:
-		EnemyChoice = input()
-		if EnemyChoice == 'RAT':
+		EnemyChoice = input().lower()
+		if EnemyChoice == 'rat':
 			EATK = 1
 			EHP = 7
 			EXPGain = 5
 			EChoice = False
-		elif EnemyChoice == 'GOBLIN':
+		elif EnemyChoice == 'goblin':
 			EATK = 2
 			EHP = 15
 			EXPGain = 10
@@ -78,16 +78,16 @@ def FightPhase():
 	global PDEF
 	global EXP
 	while EHP > 0:
-		if PHP <= 0:
+		if PHPActive <= 0:
 			print('You died!')
 			break
-		print('What should I do? Current Enemy: ' + EnemyChoice + ', Enemy HP: ' + str(EHP) + ', Your HP: ' + str(PHPActive) + '/' + str(PHP))
+		print('What should I do? Current Enemy: ' + EnemyChoice.upper() + ', Enemy HP: ' + str(EHP) + ', Your HP: ' + str(PHPActive) + '/' + str(PHP))
 		print('ATTACK, DEFEND')
 		PATKCALC = 0 #Your Attack value
 		PDEFCALC = 0 #Your Defense value
 		EATKCALC = 0 #Enemy's Attack value
-		FightChoice = input()
-		if FightChoice == 'ATTACK': #attack option
+		FightChoice = input().lower()
+		if FightChoice == 'attack': #attack option
 			PATKCALC = random.randint(0, PATK)
 			EATKCALC = random.randint(0, EATK)
 			if PATKCALC == 0:
@@ -98,7 +98,7 @@ def FightPhase():
 				print('You hit your an enemy, and dealt ' + str(PATKCALC) + ' damage!')
 				PHPActive = PHPActive - EATKCALC
 				print('The enemy dealt ' + str(EATKCALC) + ' damage!')
-		elif FightChoice == 'DEFEND': #defend option
+		elif FightChoice == 'defend': #defend option
 			PDEFCALC = random.randint(0, PDEF)
 			EATKCALC = random.randint(0, EATK)
 			if PDEFCALC == 0:
@@ -126,14 +126,14 @@ def FightPhase():
 			print(LVLUPInfo)
 			LUChoice = True
 			while LUChoice == True:
-				LVLUPChoice = input()
-				if LVLUPChoice == 'ATK':
+				LVLUPChoice = input().lower()
+				if LVLUPChoice == 'atk':
 					PATK = PATK + 1
 					LUChoice = False
-				elif LVLUPChoice == 'DEF':
+				elif LVLUPChoice == 'def':
 					PDEF = PDEF + 1
 					LUChoice = False
-				elif LVLUPChoice == 'HP':
+				elif LVLUPChoice == 'hp':
 					PHP = PHP + 2
 					LUChoice = False
 				else:
