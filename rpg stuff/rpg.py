@@ -30,7 +30,7 @@ def CharacterChoice():
 			PHP = 15
 			PHPActive = 15
 			CChoice = False
-		elif ClassChoice == 'berserker':
+		elif ClassChoice == 'protector':
 			PATK = 1
 			PDEF = 2
 			PHP = 15
