@@ -1,23 +1,25 @@
 import random
 
 #Stats
-LVL = 1
-LVLRequirements = 25 * LVL + 5 * LVL
-EXP = -LVLRequirements
-PHP = 0
-PATK = 0
-PDEF = 0
-EHP = 0
-EATK = 0
-EXPGain = 0
-EnemyChoice = '0'
+class LevelStats:
+	def __init__(self, LVL, LVLRequirements, EXP):
+		self.LVL = LVL
+		self.LVLRequirements = LVLRequirements
+		self.EXP = EXP
 
-#Class choice function
-def CharacterChoice(): 
-	global PATK
-	global PDEF
-	global PHP
-	global PHPActive
+LevelOS = LevelStats(1, 30, -30)
+Player = 0
+Enemy = 0
+
+class CharacterInfoClass: #Class choice function
+	def __init__(self, PATK, PDEF, PHP, PHPActive): 
+		self.PATK = PATK
+		self.PDEF = PDEF
+		self.PHP = PHP
+		self.PHPActive = PHPActive
+
+def CharacterChoice():
+	global Player
 	print('Choose your class:')
 	ClassInfo = 'BERSERKER (ATK = 2, DEF = 1, HP = 15), PROTECTOR (ATK = 1, DEF = 2, HP = 15)'
 	print(ClassInfo)
@@ -25,102 +27,90 @@ def CharacterChoice():
 	while CChoice == True:
 		ClassChoice = input().lower()
 		if ClassChoice == 'berserker':
-			PATK = 2
-			PDEF = 1
-			PHP = 15
-			PHPActive = 15
+			Player = CharacterInfoClass(2, 1, 15, 15)
 			CChoice = False
 		elif ClassChoice == 'protector':
-			PATK = 1
-			PDEF = 2
-			PHP = 15
-			PHPActive = 15
+			Player = CharacterInfoClass(1, 2, 15, 15)
 			CChoice = False
 		else:
 			print('Please input the right class name:')
 			print(ClassInfo)
-	return PATK and PDEF and PHP and PHPActive
+
+class BadPlayerInfoClass:
+	def __init__(self, EATK, EHP, EXPGain, EName):
+		self.EATK = EATK
+		self.EHP = EHP
+		self.EXPGain = EXPGain
+		self.EName = EName
 
 #Enemy Choice function
 def BadPlayerChoice(): 
-	global EATK
-	global EHP
-	global EXPGain
-	global EnemyChoice
+	global Enemy
 	print('Choose an enemy to fight:')
-	EnemyInfo = 'RAT (ATK = 1, EXP = 5, HP = 7), GOBLIN (ATK = 2, EXP = 10, HP = 15)'
+	EnemyInfo = 'RAT (ATK = 1, HP = 7, EXP = 5), GOBLIN (ATK = 2, HP = 12, EXP = 10)'
 	print(EnemyInfo)
 	EChoice = True
 	while EChoice == True:
 		EnemyChoice = input().lower()
 		if EnemyChoice == 'rat':
-			EATK = 1
-			EHP = 7
-			EXPGain = 5
+			Enemy = BadPlayerInfoClass(1, 7, 5, 'RAT')
 			EChoice = False
 		elif EnemyChoice == 'goblin':
-			EATK = 2
-			EHP = 15
-			EXPGain = 10
+			Enemy = BadPlayerInfoClass(2, 12, 10, 'GOBLIN')
 			EChoice = False
 		else:
 			print('Please input the right enemy name:')
 			print(EnemyInfo)
-	return EATK and EHP and EXPGain and EnemyChoice
 
 #Fight function
-def FightPhase(): 
-	global LVL
-	global EHP
-	global PHP
-	global PHPActive
-	global PATK
-	global PDEF
-	global EXP
-	while EHP > 0:
-		if PHPActive <= 0:
+def FightPhase():
+	while Enemy.EHP > 0:
+		if Player.PHPActive <= 0:
 			print('You died!')
+			CharacterChoice()
 			break
-		print('What should I do? Current Enemy: ' + EnemyChoice.upper() + ', Enemy HP: ' + str(EHP) + ', Your HP: ' + str(PHPActive) + '/' + str(PHP))
+		print('What should I do? Current Enemy: ' + Enemy.EName.upper() + ', Enemy HP: ' + str(Enemy.EHP) + ', Your HP: ' + str(Player.PHPActive) + '/' + str(Player.PHP))
 		print('ATTACK, DEFEND')
 		PATKCALC = 0 #Your Attack value
 		PDEFCALC = 0 #Your Defense value
 		EATKCALC = 0 #Enemy's Attack value
 		FightChoice = input().lower()
 		if FightChoice == 'attack': #attack option
-			PATKCALC = random.randint(0, PATK)
-			EATKCALC = random.randint(0, EATK)
+			PATKCALC = random.randint(0, Player.PATK)
+			EATKCALC = random.randint(0, Enemy.EATK)
 			if PATKCALC == 0:
-				PHPActive = PHPActive - EATKCALC
+				Player.PHPActive = Player.PHPActive - EATKCALC
 				print('You missed your attack, and the enemy hit you for ' + str(EATKCALC) + ' damage!')
 			else:
-				EHP = EHP - PATKCALC
+				Enemy.EHP = Enemy.EHP - PATKCALC
 				print('You hit your an enemy, and dealt ' + str(PATKCALC) + ' damage!')
-				PHPActive = PHPActive - EATKCALC
+				Player.PHPActive = Player.PHPActive - EATKCALC
 				print('The enemy dealt ' + str(EATKCALC) + ' damage!')
 		elif FightChoice == 'defend': #defend option
-			PDEFCALC = random.randint(0, PDEF)
-			EATKCALC = random.randint(0, EATK)
+			PDEFCALC = random.randint(0, Player.PDEF)
+			EATKCALC = random.randint(0, Enemy.EATK)
 			if PDEFCALC == 0:
-				PHPActive = PHPActive - EATKCALC
+				Player.PHPActive = Player.PHPActive - EATKCALC
 				print('You were too slow, and the enemy hit you for ' + str(EATKCALC) + ' damage!')
 			else:
 				if PDEFCALC > EATKCALC:
 					PDEFCALC = EATKCALC
-					PHPActive = PHPActive - (EATKCALC - PDEFCALC)
+					Player.PHPActive = Player.PHPActive - (EATKCALC - PDEFCALC)
 					print('You defended against an enemy, and deflected ' + str(PDEFCALC) + ' damage!')
 				else:
-					PHPActive = PHPActive - (EATKCALC - PDEFCALC)
+					Player.PHPActive = Player.PHPActive - (EATKCALC - PDEFCALC)
 					print('You defended against an enemy, and deflected ' + str(PDEFCALC) + ' damage!')
 		else:
 			print('Please input the right command.')
 	else:
-		EXP = EXP + EXPGain
-		print('You won the fight! You gained ' + str(EXPGain) + ' EXP! Your current EXP = ' + str(EXP + LVLRequirements) + '.')
-		if EXP >= 0: #Level up if statement
-			LVL = LVL + 1
-			EXP = EXP - LVLRequirements
-			print('You leveled up! You are now LVL ' + str(LVL) + '!')
+		LevelOS.EXP = LevelOS.EXP + Enemy.EXPGain
+		print('You won the fight! You gained ' + str(Enemy.EXPGain) + ' EXP! Your current EXP = ' + str(LevelOS.EXP + LevelOS.LVLRequirements) + '.')
+		if LevelOS.EXP >= 0: #Level up if statement
+			LevelOS.LVL = LevelOS.LVL + 1
+			LevelOS.LVLRequirements = 25 * LevelOS.LVL + 2 * LevelOS.LVL
+			LevelOS.EXP = LevelOS.EXP - LevelOS.LVLRequirements
+			print('You leveled up! You are now LVL ' + str(LevelOS.LVL) + '!')
+			print('Next level up goal is: ' + str(LevelOS.LVLRequirements) + ' EXP!')
 			print('You can upgrade your stats, please input one of them:')
 			LVLUPInfo = 'ATK, DEF, HP'
 			print(LVLUPInfo)
@@ -128,23 +118,25 @@ def FightPhase():
 			while LUChoice == True:
 				LVLUPChoice = input().lower()
 				if LVLUPChoice == 'atk':
-					PATK = PATK + 1
+					Player.PATK = Player.PATK + 1
 					LUChoice = False
 				elif LVLUPChoice == 'def':
-					PDEF = PDEF + 1
+					Player.PDEF = Player.PDEF + 1
 					LUChoice = False
 				elif LVLUPChoice == 'hp':
-					PHP = PHP + 2
+					Player.PHP = Player.PHP + 2
 					LUChoice = False
 				else:
 					print('Please input the right stat name:')
 					print(LVLUPInfo)
-		PHPActive = PHP
+		else:
+			print('Next level up goal is: ' + str(LevelOS.LVLRequirements) + ' EXP!')
+		Player.PHPActive = Player.PHP
 
 CharacterChoice()
-while LVL < 5:
+while LevelOS.LVL < 5:
 	BadPlayerChoice()
 	FightPhase()
 
-if LVL == 5:
+if LevelOS.LVL == 5:
 	print('You won the game!')
