@@ -8,8 +8,6 @@ class LevelStats:
 		self.EXP = EXP
 
 LevelOS = LevelStats(1, 30, -30)
-Player = 0
-Enemy = 0
 
 class CharacterInfoClass: #Class choice function
 	def __init__(self, PATK, PDEF, PHP, PHPActive): 
@@ -19,7 +17,6 @@ class CharacterInfoClass: #Class choice function
 		self.PHPActive = PHPActive
 
 def CharacterChoice():
-	global Player
 	print('Choose your class:')
 	ClassInfo = 'BERSERKER (ATK = 2, DEF = 1, HP = 15), PROTECTOR (ATK = 1, DEF = 2, HP = 15)'
 	print(ClassInfo)
@@ -35,6 +32,7 @@ def CharacterChoice():
 		else:
 			print('Please input the right class name:')
 			print(ClassInfo)
+	return Player
 
 class BadPlayerInfoClass:
 	def __init__(self, EATK, EHP, EXPGain, EName):
@@ -44,8 +42,7 @@ class BadPlayerInfoClass:
 		self.EName = EName
 
 #Enemy Choice function
-def BadPlayerChoice(): 
-	global Enemy
+def BadPlayerChoice():
 	print('Choose an enemy to fight:')
 	EnemyInfo = 'RAT (ATK = 1, HP = 7, EXP = 5), GOBLIN (ATK = 2, HP = 12, EXP = 10)'
 	print(EnemyInfo)
@@ -61,6 +58,7 @@ def BadPlayerChoice():
 		else:
 			print('Please input the right enemy name:')
 			print(EnemyInfo)
+	return Enemy
 
 #Fight function
 def FightPhase():
@@ -133,9 +131,9 @@ def FightPhase():
 			print('Next level up goal is: ' + str(LevelOS.LVLRequirements) + ' EXP!')
 		Player.PHPActive = Player.PHP
 
-CharacterChoice()
+Player = CharacterChoice()
 while LevelOS.LVL < 5:
-	BadPlayerChoice()
+	Enemy = BadPlayerChoice()
 	FightPhase()
 
 if LevelOS.LVL == 5:
