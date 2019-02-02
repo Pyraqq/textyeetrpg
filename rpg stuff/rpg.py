@@ -11,12 +11,14 @@ class Levelstats: #Level stats function
 levelos = Levelstats(1, 30, -30, 0)
 
 class Characterinfoclass: # Class choice function
-    def __init__(self, PATK, PDEF, PHP, PHPActive, inventory): 
+    def __init__(self, PATK, PDEF, PHP, PHPActive, inventory, PATKBonus, PDEFBonus): 
         self.PATK = PATK
         self.PDEF = PDEF
         self.PHP = PHP
         self.PHPActive = PHPActive
         self.inventory = None
+        self.PATKBonus = PATKBonus
+        self.PDEFBonus = PDEFBonus
 
 def characterChoice(): # Character Choice
     print('Choose your class:')
@@ -27,16 +29,16 @@ def characterChoice(): # Character Choice
     while cchoice:
         classinput = input().lower()
         if classinput == 'berserker':
-            player = Characterinfoclass(2, 1, 15, 15, None)
+            player = Characterinfoclass(1, 1, 15, 15, None, 1, 0)
             inventory = {
-            'WOODEN SWORD' : 'Equipped'
+            'WOODEN SWORD' : 'EQUIPPED'
             }
             player.inventory = inventory
             cchoice = False
         elif classinput == 'protector':
-            player = Characterinfoclass(1, 2, 20, 20, None)
+            player = Characterinfoclass(1, 1, 20, 20, None, 0, 1)
             inventory = {
-            'WOODEN SHIELD' : 'Equipped'
+            'WOODEN SHIELD' : 'EQUIPPED'
             }
             player.inventory = inventory
             cchoice = False
@@ -65,7 +67,40 @@ def dayChoice(player): # Day option
                 print(invinfo)
                 invinput = input().lower()
                 if invinput == 'equip':
-                    print('WIP')
+                    print('What would you like to equip?')
+                    equipchoice = True
+                    while equipchoice:
+                        print(player.inventory)
+                        print('If you are done, please EXIT the inventory,')
+                        equipinput = input().upper()
+                        if equipinput in player.inventory:
+                            if player.inventory[equipinput] == 'EQUIPPED':
+                                print('This item is already equipped!')
+                            else:
+                                player.inventory[equipinput] = 'EQUIPPED'
+                                equipchoice = False
+                                print('You have equipped the item!')
+                                print(player.inventory)
+                                if equipinput == 'WOODEN SWORD':
+                                    player.PATKBonus = 0
+                                    player.PATKBonus += 1
+                                elif equipinput == 'WOODEN SHIELD':
+                                    if player.PDEFBonus > 0:
+                                        player.PDEFBonus += 1
+                                    else:
+                                        player.PDEFBonus = 0
+                                        player.PDEFBonus += 1
+                                elif equipinput == 'LEATHER ARMOR SET':
+                                    if player.PDEFBonus > 0:
+                                        player.PDEFBonus += 2
+                                    else:
+                                        player.PDEFBonus = 0
+                                        player.PDEFBonus += 2
+                        elif equipinput == 'EXIT':
+                                equipchoice = False
+                                print(player.inventory)
+                        else:
+                            print('Please input the right item:')
                 elif invinput == 'exit':
                     invchoice = False
                     print(choiceoflife)
@@ -78,9 +113,10 @@ def dayChoice(player): # Day option
 
 def store(player): # Store option
     print('What should I buy?')
-    storeoption = '1 = WOODEN SWORD (10 gold, +1 ATK), 2 = WOODEN SHIELD (15 gold, +1 DEF), 3 =LEATHER ARMOR SET (30 gold, +2 DEF). If you are done, please EXIT the store.'
+    storeoption = '1 = WOODEN SWORD (10 gold, +1 ATK), 2 = WOODEN SHIELD (15 gold, +1 DEF), 3 = LEATHER ARMOR SET (30 gold, +2 DEF). If you are done, please EXIT the store.'
     itemdenied = 'You already have this item!'
     itemnocash = 'You dont have enough GOLD!'
+    print('You currently have: {0} GOLD.'.format(levelos.GOLD))
     print(storeoption)
     schoice = True
     while schoice:
@@ -91,8 +127,8 @@ def store(player): # Store option
                     print(itemdenied)
                     print(storeoption)
                 else:
-                    levelos.GOLD =- 10
-                    player.inventory['WOODEN SWORD'] = 'Unequipped'
+                    levelos.GOLD -= 10
+                    player.inventory['WOODEN SWORD'] = 'UNEQUIPPED'
                     print('You bought the WOODEN SWORD!')
                     print(storeoption)
             else:
@@ -104,8 +140,8 @@ def store(player): # Store option
                     print(itemdenied)
                     print(storeoption)
                 else:
-                    levelos.GOLD =- 15
-                    player.inventory['WOODEN SHIELD'] = 'Unequipped'
+                    levelos.GOLD -= 15
+                    player.inventory['WOODEN SHIELD'] = 'UNEQUIPPED'
                     print('You bought the WOODEN SHIELD!')
                     print(storeoption)
             else:
@@ -116,9 +152,10 @@ def store(player): # Store option
                 if 'LEATHER ARMOR SET' in player.inventory:
                     print(itemdenied)
                 else:
-                    levelos.GOLD =- 30
-                    player.inventory['LEATHER ARMOR SET'] = 'Unequipped'
+                    levelos.GOLD -= 30
+                    player.inventory['LEATHER ARMOR SET'] = 'UNEQUIPPED'
                     print('You bought the LEATHER ARMOR SET!')
+                    print(storeoption)
             else:
                 print(itemnocash)
                 print(storeoption)
@@ -165,6 +202,8 @@ def badplayerChoice():
 
 # Fight function
 def fightPhase(player, enemy):
+    playeratk = player.PATK + player.PATKBonus
+    playerdef = player.PDEF + player.PDEFBonus
     while enemy['EHP'] > 0:
         if player.PHPActive <= 0:
             print('You died!')
@@ -178,7 +217,7 @@ def fightPhase(player, enemy):
         eatkcalc = 0 # Enemy's Attack value
         fightinput = input().lower()
         if fightinput == 'attack': # attack option
-            patkcalc = random.randint(0, player.PATK)
+            patkcalc = random.randint(0, playeratk)
             eatkcalc = random.randint(0, enemy['EATK'])
             if patkcalc == 0:
                 player.PHPActive = player.PHPActive - eatkcalc
@@ -189,7 +228,7 @@ def fightPhase(player, enemy):
                 player.PHPActive = player.PHPActive - eatkcalc
                 print('The enemy dealt {0} damage!'.format(str(eatkcalc)))
         elif fightinput == 'defend': # defend option
-            pdefcalc = random.randint(0, player.PDEF)
+            pdefcalc = random.randint(0, playerdef)
             eatkcalc = random.randint(0, enemy['EATK'])
             if pdefcalc == 0:
                 player.PHPActive = player.PHPActive - eatkcalc
@@ -211,7 +250,7 @@ def fightPhase(player, enemy):
         if levelos.EXP >= 0: # Level up if statement
             levelos.LVL += 1
             levelos.LVLRequirements = 27 * levelos.LVL
-            levelos.EXP = levelos.EXP - levelos.LVLRequirements
+            levelos.EXP -= levelos.LVLRequirements
             print('You leveled up! You are now LVL {0}!'.format(str(levelos.LVL)))
             print('Next level up goal is: {0} EXP!'.format(str(levelos.LVLRequirements)))
             print('You can upgrade your stats, please input one of them:')
@@ -221,13 +260,13 @@ def fightPhase(player, enemy):
             while luchoice:
                 lvlupinput = input().lower()
                 if lvlupinput == 'atk':
-                    player.PATK = player.PATK + 1
+                    player.PATK += 1
                     luchoice = False
                 elif lvlupinput == 'def':
-                    player.PDEF = player.PDEF + 1
+                    player.PDEF += 1
                     luchoice = False
                 elif lvlupinput == 'hp':
-                    player.PHP = player.PHP + 2
+                    player.PHP += 2
                     luchoice = False
                 else:
                     print('Please input the right stat name:')
