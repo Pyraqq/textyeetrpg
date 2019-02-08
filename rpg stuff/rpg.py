@@ -8,7 +8,7 @@ class Levelstats: #Level stats function
         self.EXP = EXP
         self.GOLD = GOLD
 
-levelos = Levelstats(1, 30, -30, 100)
+levelos = Levelstats(1, 30, -30, 0)
 
 class Characterinfoclass: # Class choice function
     def __init__(self, PATK, PDEF, PHP, PHPActive, inventory, inventoryslots, PATKBonus, PDEFBonus): 
