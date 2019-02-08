@@ -8,39 +8,43 @@ class Levelstats: #Level stats function
         self.EXP = EXP
         self.GOLD = GOLD
 
-levelos = Levelstats(1, 30, -30, 0)
+levelos = Levelstats(1, 30, -30, 100)
 
 class Characterinfoclass: # Class choice function
-    def __init__(self, PATK, PDEF, PHP, PHPActive, inventory, PATKBonus, PDEFBonus): 
+    def __init__(self, PATK, PDEF, PHP, PHPActive, inventory, inventoryslots, PATKBonus, PDEFBonus): 
         self.PATK = PATK
         self.PDEF = PDEF
         self.PHP = PHP
         self.PHPActive = PHPActive
         self.inventory = None
+        self.inventoryslots = None
         self.PATKBonus = PATKBonus
         self.PDEFBonus = PDEFBonus
 
 def characterChoice(): # Character Choice
     print('Choose your class:')
-    player = None
     classinfo = 'BERSERKER (ATK = 2, DEF = 1, HP = 15), PROTECTOR (ATK = 1, DEF = 2, HP = 20)'
     print(classinfo)
     cchoice = True
     while cchoice:
         classinput = input().lower()
         if classinput == 'berserker':
-            player = Characterinfoclass(1, 1, 15, 15, None, 1, 0)
-            inventory = {
+            player = Characterinfoclass(1, 1, 15, 15, None, None, 1, 0)
+            player.inventory = {
             'WOODEN SWORD' : 'EQUIPPED'
             }
-            player.inventory = inventory
+            player.inventoryslots = {
+            'HAND1' : 'WOODEN SWORD'
+            }
             cchoice = False
         elif classinput == 'protector':
-            player = Characterinfoclass(1, 1, 20, 20, None, 0, 1)
-            inventory = {
+            player = Characterinfoclass(1, 1, 20, 20, None, None, 0, 1)
+            player.inventory = {
             'WOODEN SHIELD' : 'EQUIPPED'
             }
-            player.inventory = inventory
+            player.inventoryslot = {
+            'HAND2' : 'WOODEN SHIELD'
+            }
             cchoice = False
         else:
             print('Please input the right class name:')
@@ -50,7 +54,8 @@ def characterChoice(): # Character Choice
 def dayChoice(player): # Day option
     choiceoflife = 'What should I do today?'
     dayinfo = 'FIGHT, STORE, INVENTORY'
-    invinfo = 'EQUIP, EXIT'
+    invinfo = 'EQUIP, UNEQUIP, EXIT'
+    unequipfirst = 'Unequip your {0} first!'
     print(choiceoflife)
     print(dayinfo)
     dchoice = True
@@ -71,36 +76,77 @@ def dayChoice(player): # Day option
                     equipchoice = True
                     while equipchoice:
                         print(player.inventory)
-                        print('If you are done, please EXIT the inventory,')
+                        print('If you are done, please EXIT the inventory.')
                         equipinput = input().upper()
                         if equipinput in player.inventory:
                             if player.inventory[equipinput] == 'EQUIPPED':
                                 print('This item is already equipped!')
                             else:
-                                player.inventory[equipinput] = 'EQUIPPED'
-                                equipchoice = False
-                                print('You have equipped the item!')
-                                print(player.inventory)
                                 if equipinput == 'WOODEN SWORD':
-                                    player.PATKBonus = 0
-                                    player.PATKBonus += 1
+                                    if 'HAND1' in player.inventoryslots:
+                                        print(unequipfirst.format('weapon'))
+                                    else:
+                                        player.inventoryslots['HAND1'] = 'WOODEN SWORD'
+                                        player.PATKBonus += 1
+                                        player.inventory[equipinput] = 'EQUIPPED'
+                                        print('You have equipped the item!')
                                 elif equipinput == 'WOODEN SHIELD':
-                                    if player.PDEFBonus > 0:
-                                        player.PDEFBonus += 1
+                                    if 'HAND2' in player.inventoryslots:
+                                        print(unequipfirst.format('shield'))
                                     else:
-                                        player.PDEFBonus = 0
+                                        player.inventoryslots['HAND2'] = 'WOODEN SHIELD'
                                         player.PDEFBonus += 1
+                                        player.inventory[equipinput] = 'EQUIPPED'
+                                        print('You have equipped the item!')
                                 elif equipinput == 'LEATHER ARMOR SET':
-                                    if player.PDEFBonus > 0:
-                                        player.PDEFBonus += 2
+                                    if 'BODY' in player.inventoryslots:
+                                        print(unequipfirst.format('armor'))
                                     else:
-                                        player.PDEFBonus = 0
+                                        player.inventoryslots['BODY'] = 'LEATHER ARMOR SET'
                                         player.PDEFBonus += 2
+                                        player.inventory[equipinput] = 'EQUIPPED'
+                                        print('You have equipped the item!')
+                                elif equipinput == 'IRON SWORD':
+                                    if 'HAND1' in player.inventoryslots:
+                                        print(unequipfirst.format('weapon'))
+                                    else:
+                                        player.inventoryslots['HAND1'] = 'IRON SWORD'
+                                        player.PATKBonus += 2
+                                        player.inventory[equipinput] = 'EQUIPPED'
+                                        print('You have equipped the item!')
                         elif equipinput == 'EXIT':
                                 equipchoice = False
                                 print(player.inventory)
                         else:
                             print('Please input the right item:')
+                elif invinput == 'unequip':
+                    print('What would you like to unequip?')
+                    unequipchoice = True
+                    while unequipchoice:
+                        print(player.inventory)
+                        print('If you are done, please EXIT the inventory.')
+                        unequipinput = input().upper()
+                        if unequipinput in player.inventory:
+                            if player.inventory[unequipinput] == 'EQUIPPED':
+                                player.inventory[unequipinput] = 'UNEQUIPPED'
+                                if unequipinput == 'WOODEN SWORD':
+                                    del player.inventoryslots['HAND1']
+                                    player.PATKBonus -= 1
+                                elif unequipinput == 'WOODEN SHIELD':
+                                    del player.inventoryslots['HAND2']
+                                    player.PDEFBonus -= 1
+                                elif unequipinput == 'LEATHER ARMOR SET':
+                                    del player.inventoryslots['BODY']
+                                    player.PDEFBonus -= 2
+                                elif unequipinput == 'IRON SWORD':
+                                    del player.inventoryslots['HAND1']
+                                    player.PATKBonus -= 2
+                                print('You have unequipped the item!')
+                            elif player.inventory[unequipinput] == 'UNEQUIPPED':
+                                print('This item is already unequipped!')
+                        elif unequipinput == 'EXIT':
+                            unequipchoice = False
+                            print(player.inventory)
                 elif invinput == 'exit':
                     invchoice = False
                     print(choiceoflife)
@@ -113,7 +159,7 @@ def dayChoice(player): # Day option
 
 def store(player): # Store option
     print('What should I buy?')
-    storeoption = '1 = WOODEN SWORD (10 gold, +1 ATK), 2 = WOODEN SHIELD (15 gold, +1 DEF), 3 = LEATHER ARMOR SET (30 gold, +2 DEF). If you are done, please EXIT the store.'
+    storeoption = '1 = WOODEN SWORD (10 gold, +1 ATK), 2 = WOODEN SHIELD (15 gold, +1 DEF), 3 = LEATHER ARMOR SET (30 gold, +2 DEF), 4 = IRON SWORD (25 GOLD, +2 ATK). If you are done, please EXIT the store.'
     itemdenied = 'You already have this item!'
     itemnocash = 'You dont have enough GOLD!'
     print('You currently have: {0} GOLD.'.format(levelos.GOLD))
@@ -151,10 +197,24 @@ def store(player): # Store option
             if levelos.GOLD >= 30:
                 if 'LEATHER ARMOR SET' in player.inventory:
                     print(itemdenied)
+                    print(storeoption)
                 else:
                     levelos.GOLD -= 30
                     player.inventory['LEATHER ARMOR SET'] = 'UNEQUIPPED'
                     print('You bought the LEATHER ARMOR SET!')
+                    print(storeoption)
+            else:
+                print(itemnocash)
+                print(storeoption)
+        elif sinput == '4':
+            if levelos.GOLD >= 25:
+                if 'IRON SWORD' in player.inventory:
+                    print(itemdenied)
+                    print(storeoption)
+                else:
+                    levelos.GOLD -= 25
+                    player.inventory['IRON SWORD'] = 'UNEQUIPPED'
+                    print('You bought the IRON SWORD!')
                     print(storeoption)
             else:
                 print(itemnocash)
