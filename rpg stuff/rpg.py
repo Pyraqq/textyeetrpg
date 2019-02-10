@@ -28,6 +28,7 @@ class Characterinfoclass: # Class choice function
             self.inventoryslots[slot] = name
             self.PATKBonus += bonusvalue
             self.inventory[equipinput] = 'EQUIPPED'
+            print('You have equipped the item!')
     
     def equipFunctionDEF(self, slot, slottype, name, bonusvalue, unequipfirst, equipinput):
         if slot in self.inventoryslots:
@@ -36,6 +37,7 @@ class Characterinfoclass: # Class choice function
             self.inventoryslots[slot] = name
             self.PDEFBonus += bonusvalue
             self.inventory[equipinput] = 'EQUIPPED'
+            print('You have equipped the item!')
 
     def unequipFunctionATK(self, slot, bonusvalue):
         del self.inventoryslots[slot]
@@ -44,6 +46,20 @@ class Characterinfoclass: # Class choice function
     def unequipFunctionDEF(self, slot, bonusvalue):
         del self.inventoryslots[slot]
         self.PDEFBonus -= bonusvalue
+
+    def storeFunction(self, name, costvalue, itemdenied, storeoption, itemnocash):
+        if levelos.GOLD >= costvalue:
+            if name in self.inventory:
+                print(itemdenied)
+                print(storeoption)
+            else:
+                levelos.GOLD -= costvalue
+                self.inventory[name] = 'UNEQUIPPED'
+                print('You bought the {0}!'.format(name))
+                print(storeoption)
+        else:
+            print(itemnocash)
+            print(storeoption)
 
 def characterChoice(): # Character Choice
     print('Choose your class:')
@@ -114,7 +130,6 @@ def dayChoice(player): # Day option
                                     Characterinfoclass.equipFunctionDEF(player, 'BODY', 'armor', 'LEATHER ARMOR SET', 2, unequipfirst, equipinput)
                                 elif equipinput == 'IRON SWORD':
                                     Characterinfoclass.equipFunctionATK(player, 'HAND1', 'weapon', 'IRON SWORD', 2, unequipfirst, equipinput)
-                                print('You have equipped the item!')
                         elif equipinput == 'EXIT':
                                 equipchoice = False
                                 print(player.inventory)
@@ -165,57 +180,13 @@ def store(player): # Store option
     while schoice:
         sinput = input().lower()
         if sinput == '1':
-            if levelos.GOLD >= 10:
-                if 'WOODEN SWORD' in player.inventory:
-                    print(itemdenied)
-                    print(storeoption)
-                else:
-                    levelos.GOLD -= 10
-                    player.inventory['WOODEN SWORD'] = 'UNEQUIPPED'
-                    print('You bought the WOODEN SWORD!')
-                    print(storeoption)
-            else:
-                print(itemnocash)
-                print(storeoption)
+            Characterinfoclass.storeFunction(player, 'WOODEN SWORD', 10, itemdenied, storeoption, itemnocash)
         elif sinput == '2':
-            if levelos.GOLD >= 15:
-                if 'WOODEN SHIELD' in player.inventory:
-                    print(itemdenied)
-                    print(storeoption)
-                else:
-                    levelos.GOLD -= 15
-                    player.inventory['WOODEN SHIELD'] = 'UNEQUIPPED'
-                    print('You bought the WOODEN SHIELD!')
-                    print(storeoption)
-            else:
-                print(itemnocash)
-                print(storeoption)
+            Characterinfoclass.storeFunction(player, 'WOODEN SHIELD', 15, itemdenied, storeoption, itemnocash)
         elif sinput == '3':
-            if levelos.GOLD >= 30:
-                if 'LEATHER ARMOR SET' in player.inventory:
-                    print(itemdenied)
-                    print(storeoption)
-                else:
-                    levelos.GOLD -= 30
-                    player.inventory['LEATHER ARMOR SET'] = 'UNEQUIPPED'
-                    print('You bought the LEATHER ARMOR SET!')
-                    print(storeoption)
-            else:
-                print(itemnocash)
-                print(storeoption)
+            Characterinfoclass.storeFunction(player, 'LEATHER ARMOR SET', 30, itemdenied, storeoption, itemnocash)
         elif sinput == '4':
-            if levelos.GOLD >= 25:
-                if 'IRON SWORD' in player.inventory:
-                    print(itemdenied)
-                    print(storeoption)
-                else:
-                    levelos.GOLD -= 25
-                    player.inventory['IRON SWORD'] = 'UNEQUIPPED'
-                    print('You bought the IRON SWORD!')
-                    print(storeoption)
-            else:
-                print(itemnocash)
-                print(storeoption)
+            Characterinfoclass.storeFunction(player, 'IRON SWORD', 25, itemdenied, storeoption, itemnocash)
         elif sinput == 'exit':
             print('What should I do today?')
             dayinfo = 'FIGHT, STORE, INVENTORY'
