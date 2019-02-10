@@ -21,6 +21,30 @@ class Characterinfoclass: # Class choice function
         self.PATKBonus = PATKBonus
         self.PDEFBonus = PDEFBonus
 
+    def equipFunctionATK(self, slot, slottype, name, bonusvalue, unequipfirst, equipinput):
+        if slot in self.inventoryslots:
+            print(unequipfirst.format(slottype))
+        else:
+            self.inventoryslots[slot] = name
+            self.PATKBonus += bonusvalue
+            self.inventory[equipinput] = 'EQUIPPED'
+    
+    def equipFunctionDEF(self, slot, slottype, name, bonusvalue, unequipfirst, equipinput):
+        if slot in self.inventoryslots:
+            print(unequipfirst.format(slottype))
+        else:
+            self.inventoryslots[slot] = name
+            self.PDEFBonus += bonusvalue
+            self.inventory[equipinput] = 'EQUIPPED'
+
+    def unequipFunctionATK(self, slot, bonusvalue):
+        del self.inventoryslots[slot]
+        self.PATKBonus -= bonusvalue
+
+    def unequipFunctionDEF(self, slot, bonusvalue):
+        del self.inventoryslots[slot]
+        self.PDEFBonus -= bonusvalue
+
 def characterChoice(): # Character Choice
     print('Choose your class:')
     classinfo = 'BERSERKER (ATK = 2, DEF = 1, HP = 15), PROTECTOR (ATK = 1, DEF = 2, HP = 20)'
@@ -76,44 +100,21 @@ def dayChoice(player): # Day option
                     equipchoice = True
                     while equipchoice:
                         print(player.inventory)
-                        print('If you are done, please EXIT the inventory.')
+                        print('If you are done, please EXIT this action.')
                         equipinput = input().upper()
                         if equipinput in player.inventory:
                             if player.inventory[equipinput] == 'EQUIPPED':
                                 print('This item is already equipped!')
                             else:
                                 if equipinput == 'WOODEN SWORD':
-                                    if 'HAND1' in player.inventoryslots:
-                                        print(unequipfirst.format('weapon'))
-                                    else:
-                                        player.inventoryslots['HAND1'] = 'WOODEN SWORD'
-                                        player.PATKBonus += 1
-                                        player.inventory[equipinput] = 'EQUIPPED'
-                                        print('You have equipped the item!')
+                                    Characterinfoclass.equipFunctionATK(player, 'HAND1', 'weapon', 'WOODEN SWORD', 1, unequipfirst, equipinput)
                                 elif equipinput == 'WOODEN SHIELD':
-                                    if 'HAND2' in player.inventoryslots:
-                                        print(unequipfirst.format('shield'))
-                                    else:
-                                        player.inventoryslots['HAND2'] = 'WOODEN SHIELD'
-                                        player.PDEFBonus += 1
-                                        player.inventory[equipinput] = 'EQUIPPED'
-                                        print('You have equipped the item!')
+                                    Characterinfoclass.equipFunctionDEF(player, 'HAND2', 'shield', 'WOODEN SHIELD', 1, unequipfirst, equipinput)
                                 elif equipinput == 'LEATHER ARMOR SET':
-                                    if 'BODY' in player.inventoryslots:
-                                        print(unequipfirst.format('armor'))
-                                    else:
-                                        player.inventoryslots['BODY'] = 'LEATHER ARMOR SET'
-                                        player.PDEFBonus += 2
-                                        player.inventory[equipinput] = 'EQUIPPED'
-                                        print('You have equipped the item!')
+                                    Characterinfoclass.equipFunctionDEF(player, 'BODY', 'armor', 'LEATHER ARMOR SET', 2, unequipfirst, equipinput)
                                 elif equipinput == 'IRON SWORD':
-                                    if 'HAND1' in player.inventoryslots:
-                                        print(unequipfirst.format('weapon'))
-                                    else:
-                                        player.inventoryslots['HAND1'] = 'IRON SWORD'
-                                        player.PATKBonus += 2
-                                        player.inventory[equipinput] = 'EQUIPPED'
-                                        print('You have equipped the item!')
+                                    Characterinfoclass.equipFunctionATK(player, 'HAND1', 'weapon', 'IRON SWORD', 2, unequipfirst, equipinput)
+                                print('You have equipped the item!')
                         elif equipinput == 'EXIT':
                                 equipchoice = False
                                 print(player.inventory)
@@ -124,23 +125,19 @@ def dayChoice(player): # Day option
                     unequipchoice = True
                     while unequipchoice:
                         print(player.inventory)
-                        print('If you are done, please EXIT the inventory.')
+                        print('If you are done, please EXIT this action.')
                         unequipinput = input().upper()
                         if unequipinput in player.inventory:
                             if player.inventory[unequipinput] == 'EQUIPPED':
                                 player.inventory[unequipinput] = 'UNEQUIPPED'
                                 if unequipinput == 'WOODEN SWORD':
-                                    del player.inventoryslots['HAND1']
-                                    player.PATKBonus -= 1
+                                    Characterinfoclass.unequipFunctionATK(player, 'HAND1', 1)
                                 elif unequipinput == 'WOODEN SHIELD':
-                                    del player.inventoryslots['HAND2']
-                                    player.PDEFBonus -= 1
+                                    Characterinfoclass.unequipFunctionDEF(player, 'HAND2', 1)
                                 elif unequipinput == 'LEATHER ARMOR SET':
-                                    del player.inventoryslots['BODY']
-                                    player.PDEFBonus -= 2
+                                    Characterinfoclass.unequipFunctionDEF(player, 'BODY', 2)
                                 elif unequipinput == 'IRON SWORD':
-                                    del player.inventoryslots['HAND1']
-                                    player.PATKBonus -= 2
+                                    Characterinfoclass.unequipFunctionATK(player, 'HAND1', 2)
                                 print('You have unequipped the item!')
                             elif player.inventory[unequipinput] == 'UNEQUIPPED':
                                 print('This item is already unequipped!')
