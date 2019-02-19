@@ -61,6 +61,34 @@ class Characterinfoclass: # Class choice function
             print(itemnocash)
             print(storeoption)
 
+def randomEnemy():
+    randomenemyint = random.randint(0, 100)
+    if randomenemyint <= 60:
+        enemy = {
+        'EATK' : 1,
+        'EHP' : 7,
+        'EXPGain' : 5,
+        'EName' : 'RAT',
+        'GOLDGain' : 2
+        }
+    elif randomenemyint <= 90:
+        enemy = {
+        'EATK' : 2,
+        'EHP' : 12,
+        'EXPGain' : 10,
+        'EName' : 'GOBLIN',
+        'GOLDGain' : 5
+         }
+    elif randomenemyint <= 100:
+        enemy = {
+        'EATK' : 3,
+        'EHP' : 15,
+        'EXPGain' : 11,
+        'EName' : 'THIEF',
+        'GOLDGain' : 10
+       }
+    return enemy
+
 def characterChoice(): # Character Choice
     print('Choose your class:')
     classinfo = 'BERSERKER (ATK = 2, DEF = 1, HP = 15), PROTECTOR (ATK = 1, DEF = 2, HP = 20)'
@@ -91,9 +119,58 @@ def characterChoice(): # Character Choice
             print(classinfo)
     return player
 
+def adventure(player):
+    wherewyltg = 'Where would you like to go?'
+    locations = 'WOODS, EXIT'
+    rightcommand = 'Please input the right command:'
+    whattodo = 'WALK, EXIT'
+    whatshould = 'What should I do?'
+    print(wherewyltg)
+    print(locations)
+    lchoice = True
+    while lchoice:
+        locationchoice = input().lower()
+        if locationchoice == 'woods':
+            lchoice = False
+            wanderingaround = True
+            print(whatshould)
+            while wanderingaround:
+                print(whattodo)
+                decision = input().lower()
+                if decision == 'walk':
+                    print('You move forward.')
+                    randomevent = random.randint(0, 100)
+                    if randomevent <= 40:
+                        print('You have encountered an enemy!')
+                        enemy = randomEnemy()
+                        fightPhase(player, enemy)
+                        print(whatshould)
+                    elif randomevent <= 50:
+                        print('You have found an item!')
+                        print('Sadly, it does not exist yet.')
+                        print(whatshould)
+                    elif randomevent <= 100:
+                        print('Nothing happens.')
+                        print(whatshould)
+                elif decision == 'exit':
+                    wanderingaround = False
+                    print(wherewyltg)
+                    print(locations)
+                    lchoice = True
+                else:
+                    print(rightcommand)
+        elif locationchoice == 'exit':
+            lchoice = False
+            dayChoice(player)
+            print(wherewyltg)
+            print(locations)
+        else:
+            print(rightcommand)
+            print(locations)
+
 def dayChoice(player): # Day option
     choiceoflife = 'What should I do today?'
-    dayinfo = 'FIGHT, STORE, INVENTORY'
+    dayinfo = 'ADVENTURE, ARENA, STORE, INVENTORY'
     invinfo = 'EQUIP, UNEQUIP, EXIT'
     unequipfirst = 'Unequip your {0} first!'
     print(choiceoflife)
@@ -101,10 +178,15 @@ def dayChoice(player): # Day option
     dchoice = True
     while dchoice:
         takeyourtime = input().lower()
-        if takeyourtime == 'fight':
-            break
+        if takeyourtime == 'adventure':
+            adventure(player)
+        elif takeyourtime == 'arena':
+            enemy = badplayerChoice()
+            fightPhase(player, enemy)
+            print(choiceoflife)
+            print(dayinfo)
         elif takeyourtime == 'store':
-            store(player)
+            store(player, dayinfo)
         elif takeyourtime == 'inventory':
             print(player.inventory)
             invchoice = True
@@ -169,11 +251,11 @@ def dayChoice(player): # Day option
             print('Please input the right command:')
             print(dayinfo)
 
-def store(player): # Store option
-    print('What should I buy?')
+def store(player, dayinfo): # Store option
     storeoption = '1 = WOODEN SWORD (10 gold, +1 ATK), 2 = WOODEN SHIELD (15 gold, +1 DEF), 3 = LEATHER ARMOR SET (30 gold, +2 DEF), 4 = IRON SWORD (25 GOLD, +2 ATK). If you are done, please EXIT the store.'
     itemdenied = 'You already have this item!'
     itemnocash = 'You dont have enough GOLD!'
+    print('What should I buy?')
     print('You currently have: {0} GOLD.'.format(levelos.GOLD))
     print(storeoption)
     schoice = True
@@ -189,7 +271,6 @@ def store(player): # Store option
             Characterinfoclass.storeFunction(player, 'IRON SWORD', 25, itemdenied, storeoption, itemnocash)
         elif sinput == 'exit':
             print('What should I do today?')
-            dayinfo = 'FIGHT, STORE, INVENTORY'
             print(dayinfo)
             break
         else:
@@ -200,7 +281,7 @@ def store(player): # Store option
 # Enemy Choice function
 def badplayerChoice():
     print('Choose an enemy to fight:')
-    enemyinfochoice = 'RAT (ATK = 1, HP = 7, EXP = 5, GOLD = 2), GOBLIN (ATK = 2, HP = 12, EXP = 10, GOLD = 5)'
+    enemyinfochoice = 'RAT (ATK = 1, HP = 7, EXP = 5, GOLD = 2), GOBLIN (ATK = 2, HP = 12, EXP = 10, GOLD = 5), THIEF (ATK = 2, HP = 15, EXP = 11, GOLD = 10)'
     print(enemyinfochoice)
     echoice = True
     while echoice:
@@ -221,6 +302,15 @@ def badplayerChoice():
             'EXPGain' : 10,
             'EName' : 'GOBLIN',
             'GOLDGain' : 5
+            }
+            echoice = False
+        elif enemyinput == 'thief':
+            enemy = {
+            'EATK' : 3,
+            'EHP' : 15,
+            'EXPGain' : 11,
+            'EName' : 'THIEF',
+            'GOLDGain' : 10
             }
             echoice = False
         else:
@@ -307,8 +397,6 @@ def main():
     player = characterChoice()
     while levelos.LVL < 10:
         dayChoice(player)
-        enemy = badplayerChoice()
-        fightPhase(player, enemy)
     if levelos.LVL == 10:
         print('You won the game!')
 
