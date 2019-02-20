@@ -61,32 +61,24 @@ class Characterinfoclass: # Class choice function
             print(itemnocash)
             print(storeoption)
 
+def enemySpecifier(ATKValue, HPValue, EXPValue, Name, GOLDValue):
+    enemy = {
+    'EATK' : ATKValue,
+    'EHP' : HPValue,
+    'EXPGain' : EXPValue,
+    'EName' : Name,
+    'GOLDGain' : GOLDValue
+    }
+    return enemy
+
 def randomEnemy():
     randomenemyint = random.randint(0, 100)
     if randomenemyint <= 60:
-        enemy = {
-        'EATK' : 1,
-        'EHP' : 7,
-        'EXPGain' : 5,
-        'EName' : 'RAT',
-        'GOLDGain' : 2
-        }
+        enemy = enemySpecifier(1, 7, 5, 'RAT', 2)
     elif randomenemyint <= 90:
-        enemy = {
-        'EATK' : 2,
-        'EHP' : 12,
-        'EXPGain' : 10,
-        'EName' : 'GOBLIN',
-        'GOLDGain' : 5
-         }
+        enemy = enemySpecifier(2, 12, 10, 'GOBLIN', 5)
     elif randomenemyint <= 100:
-        enemy = {
-        'EATK' : 3,
-        'EHP' : 15,
-        'EXPGain' : 11,
-        'EName' : 'THIEF',
-        'GOLDGain' : 10
-       }
+        enemy = enemySpecifier(3, 15, 11, 'THIEF', 10)
     return enemy
 
 def characterChoice(): # Character Choice
@@ -287,31 +279,13 @@ def badplayerChoice():
     while echoice:
         enemyinput = input().lower()
         if enemyinput == 'rat':
-            enemy = {
-            'EATK' : 1,
-            'EHP' : 7,
-            'EXPGain' : 5,
-            'EName' : 'RAT',
-            'GOLDGain' : 2
-            }
+            enemy = enemySpecifier(1, 7, 5, 'RAT', 2)
             echoice = False
         elif enemyinput == 'goblin':
-            enemy = {
-            'EATK' : 2,
-            'EHP' : 12,
-            'EXPGain' : 10,
-            'EName' : 'GOBLIN',
-            'GOLDGain' : 5
-            }
+            enemy = enemySpecifier(2, 12, 10, 'GOBLIN', 5)
             echoice = False
         elif enemyinput == 'thief':
-            enemy = {
-            'EATK' : 3,
-            'EHP' : 15,
-            'EXPGain' : 11,
-            'EName' : 'THIEF',
-            'GOLDGain' : 10
-            }
+            enemy = enemySpecifier(3, 15, 11, 'THIEF', 10)
             echoice = False
         else:
             print('Please input the right enemy name:')
