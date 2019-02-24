@@ -60,6 +60,10 @@ class Characterinfoclass: # Class choice function
         else:
             print(itemnocash)
             print(storeoption)
+    
+    def itemDrop(self, name):
+        self.inventory[name] = 'UNEQUIPPED'
+        print('It is a {0}!'.format(name))
 
 def enemySpecifier(ATKValue, HPValue, EXPValue, Name, GOLDValue):
     enemy = {
@@ -137,9 +141,33 @@ def adventure(player):
                         enemy = randomEnemy()
                         fightPhase(player, enemy)
                         print(whatshould)
-                    elif randomevent <= 50:
+                    elif randomevent <= 45:
                         print('You have found an item!')
-                        print('Sadly, it does not exist yet.')
+                        randomitem = random.randint(0, 100)
+                        if randomitem <= 70:
+                            if 'WOODEN SWORD' in player.inventory:
+                                print('You already have this item, so you sell it for {} GOLD!'.format(5))
+                                player.GOLD += 5
+                            else:
+                                Characterinfoclass.itemDrop(player, 'WOODEN SWORD')
+                        elif randomitem <= 90:
+                            if 'WOODEN SHIELD' in player.inventory:
+                                print('You already have this item, so you sell it for {} GOLD!'.format(7))
+                                player.GOLD += 7
+                            else:
+                                Characterinfoclass.itemDrop(player, 'WOODEN SHIELD')
+                        elif randomitem <= 97:
+                            if 'IRON SWORD' in player.inventory:
+                                print('You already have this item, so you sell it for {} GOLD!'.format(12))
+                                player.GOLD += 12
+                            else:
+                                Characterinfoclass.itemDrop(player, 'IRON SWORD')
+                        elif randomitem <= 100:
+                            if 'LEATHER ARMOR SET' in player.inventory:
+                                print('You already have this item, so you sell it for {} GOLD!'.format(15))
+                                player.GOLD += 15
+                            else:
+                                Characterinfoclass.itemDrop(player, 'LEATHER ARMOR SET')
                         print(whatshould)
                     elif randomevent <= 100:
                         print('Nothing happens.')
