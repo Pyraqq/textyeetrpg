@@ -78,22 +78,22 @@ def enemySpecifier(ATKValue, HPValue, EXPValue, Name, GOLDValue):
 def randomEnemy():
     randomenemyint = random.randint(0, 100)
     if randomenemyint <= 60:
-        enemy = enemySpecifier(1, 7, 5, 'RAT', 2)
+        enemy = enemySpecifier(3, 21, 5, 'RAT', 2)
     elif randomenemyint <= 90:
-        enemy = enemySpecifier(2, 12, 10, 'GOBLIN', 5)
+        enemy = enemySpecifier(6, 36, 10, 'GOBLIN', 5)
     elif randomenemyint <= 100:
-        enemy = enemySpecifier(3, 15, 11, 'THIEF', 10)
+        enemy = enemySpecifier(9, 45, 11, 'THIEF', 10)
     return enemy
 
 def characterChoice(): # Character Choice
     print('Choose your class:')
-    classinfo = 'BERSERKER (ATK = 2, DEF = 1, HP = 15), PROTECTOR (ATK = 1, DEF = 2, HP = 20)'
+    classinfo = 'BERSERKER (ATK = 6, DEF = 3, HP = 45)\nPROTECTOR (ATK = 3, DEF = 6, HP = 60)'
     print(classinfo)
     cchoice = True
     while cchoice:
         classinput = input().lower()
         if classinput == 'berserker':
-            player = Characterinfoclass(1, 1, 15, 15, None, None, 1, 0)
+            player = Characterinfoclass(3, 3, 45, 45, None, None, 3, 0)
             player.inventory = {
             'WOODEN SWORD' : 'EQUIPPED'
             }
@@ -102,7 +102,7 @@ def characterChoice(): # Character Choice
             }
             cchoice = False
         elif classinput == 'protector':
-            player = Characterinfoclass(1, 1, 20, 20, None, None, 0, 1)
+            player = Characterinfoclass(3, 3, 60, 60, None, None, 0, 3)
             player.inventory = {
             'WOODEN SHIELD' : 'EQUIPPED'
             }
@@ -182,8 +182,6 @@ def adventure(player):
         elif locationchoice == 'exit':
             lchoice = False
             dayChoice(player)
-            print(wherewyltg)
-            print(locations)
         else:
             print(rightcommand)
             print(locations)
@@ -201,7 +199,7 @@ def dayChoice(player): # Day option
         if takeyourtime == 'adventure':
             adventure(player)
         elif takeyourtime == 'arena':
-            enemy = badplayerChoice()
+            enemy = badplayerChoice(player)
             fightPhase(player, enemy)
             print(choiceoflife)
             print(dayinfo)
@@ -272,7 +270,7 @@ def dayChoice(player): # Day option
             print(dayinfo)
 
 def store(player, dayinfo): # Store option
-    storeoption = '1 = WOODEN SWORD (10 gold, +1 ATK), 2 = WOODEN SHIELD (15 gold, +1 DEF), 3 = LEATHER ARMOR SET (30 gold, +2 DEF), 4 = IRON SWORD (25 GOLD, +2 ATK). If you are done, please EXIT the store.'
+    storeoption = '1 = WOODEN SWORD (10 gold, +1 ATK)\n2 = WOODEN SHIELD (15 gold, +1 DEF)\n3 = LEATHER ARMOR SET (30 gold, +2 DEF)\n4 = IRON SWORD (25 GOLD, +1 ATK)\nIf you are done, please EXIT the store.'
     itemdenied = 'You already have this item!'
     itemnocash = 'You dont have enough GOLD!'
     print('What should I buy?')
@@ -299,22 +297,25 @@ def store(player, dayinfo): # Store option
     return player
 
 # Enemy Choice function
-def badplayerChoice():
-    print('Choose an enemy to fight:')
-    enemyinfochoice = 'RAT (ATK = 1, HP = 7, EXP = 5, GOLD = 2), GOBLIN (ATK = 2, HP = 12, EXP = 10, GOLD = 5), THIEF (ATK = 2, HP = 15, EXP = 11, GOLD = 10)'
+def badplayerChoice(player):
+    print('Choose an enemy to fight: (or EXIT)')
+    enemyinfochoice = 'RAT (ATK = 3, HP = 21, EXP = 5, GOLD = 2)\nGOBLIN (ATK = 6, HP = 36, EXP = 10, GOLD = 5)\nTHIEF (ATK = 9, HP = 45, EXP = 11, GOLD = 10)'
     print(enemyinfochoice)
     echoice = True
     while echoice:
         enemyinput = input().lower()
         if enemyinput == 'rat':
-            enemy = enemySpecifier(1, 7, 5, 'RAT', 2)
+            enemy = enemySpecifier(3, 21, 5, 'RAT', 2)
             echoice = False
         elif enemyinput == 'goblin':
-            enemy = enemySpecifier(2, 12, 10, 'GOBLIN', 5)
+            enemy = enemySpecifier(6, 36, 10, 'GOBLIN', 5)
             echoice = False
         elif enemyinput == 'thief':
-            enemy = enemySpecifier(3, 15, 11, 'THIEF', 10)
+            enemy = enemySpecifier(9, 45, 11, 'THIEF', 10)
             echoice = False
+        elif enemyinput == 'exit':
+            echoice = False
+            dayChoice(player)
         else:
             print('Please input the right enemy name:')
             print(enemyinfochoice)
@@ -366,7 +367,7 @@ def fightPhase(player, enemy):
     else:
         levelos.EXP = levelos.EXP + enemy['EXPGain']
         levelos.GOLD = levelos.GOLD + enemy['GOLDGain']
-        print('You won the fight! You gained {0} EXP and {1} GOLD! Your current EXP = {2}, Your current GOLD = {3}.'.format(str(enemy['EXPGain']), str(enemy['GOLDGain']), str(levelos.EXP + levelos.LVLRequirements), str(levelos.GOLD)))
+        print('You won the fight! You gained {0} EXP and {1} GOLD!\nYour current EXP = {2}, Your current GOLD = {3}.'.format(str(enemy['EXPGain']), str(enemy['GOLDGain']), str(levelos.EXP + levelos.LVLRequirements), str(levelos.GOLD)))
         if levelos.EXP >= 0: # Level up if statement
             levelos.LVL += 1
             levelos.LVLRequirements = 27 * levelos.LVL
@@ -386,7 +387,7 @@ def fightPhase(player, enemy):
                     player.PDEF += 1
                     luchoice = False
                 elif lvlupinput == 'hp':
-                    player.PHP += 2
+                    player.PHP += 3
                     luchoice = False
                 else:
                     print('Please input the right stat name:')
