@@ -11,7 +11,7 @@ class Levelstats: #Level stats function
 levelos = Levelstats(1, 30, -30, 0)
 
 class Characterinfoclass: # Class choice function
-    def __init__(self, PATK, PDEF, PHP, PHPActive, inventory, inventoryslots, PATKBonus, PDEFBonus): 
+    def __init__(self, PATK, PDEF, PHP, PHPActive, inventory, inventoryslots, PATKBonus, PDEFBonus, hitchance): 
         self.PATK = PATK
         self.PDEF = PDEF
         self.PHP = PHP
@@ -20,13 +20,15 @@ class Characterinfoclass: # Class choice function
         self.inventoryslots = None
         self.PATKBonus = PATKBonus
         self.PDEFBonus = PDEFBonus
+        self.hitchance = hitchance
 
-    def equipFunctionATK(self, slot, slottype, name, bonusvalue, unequipfirst, equipinput):
+    def equipFunctionATK(self, slot, slottype, name, bonusvalue, hitchance, unequipfirst, equipinput):
         if slot in self.inventoryslots:
             print(unequipfirst.format(slottype))
         else:
             self.inventoryslots[slot] = name
             self.PATKBonus += bonusvalue
+            self.hitchance = hitchance
             self.inventory[equipinput] = 'EQUIPPED'
             print('You have equipped the item!')
     
@@ -39,9 +41,10 @@ class Characterinfoclass: # Class choice function
             self.inventory[equipinput] = 'EQUIPPED'
             print('You have equipped the item!')
 
-    def unequipFunctionATK(self, slot, bonusvalue):
+    def unequipFunctionATK(self, slot, bonusvalue, hitchance):
         del self.inventoryslots[slot]
         self.PATKBonus -= bonusvalue
+        self.hitchance = hitchance
 
     def unequipFunctionDEF(self, slot, bonusvalue):
         del self.inventoryslots[slot]
@@ -65,24 +68,25 @@ class Characterinfoclass: # Class choice function
         self.inventory[name] = 'UNEQUIPPED'
         print('It is a {0}!'.format(name))
 
-def enemySpecifier(ATKValue, HPValue, EXPValue, Name, GOLDValue):
+def enemySpecifier(ATKValue, HPValue, EXPValue, Name, GOLDValue, Ehitchance):
     enemy = {
     'EATK' : ATKValue,
     'EHP' : HPValue,
     'EXPGain' : EXPValue,
     'EName' : Name,
-    'GOLDGain' : GOLDValue
+    'GOLDGain' : GOLDValue,
+    'Ehitchance' : Ehitchance
     }
     return enemy
 
 def randomEnemy():
     randomenemyint = random.randint(0, 100)
     if randomenemyint <= 60:
-        enemy = enemySpecifier(3, 21, 5, 'RAT', 2)
+        enemy = enemySpecifier(3, 21, 5, 'RAT', 2, 50)
     elif randomenemyint <= 90:
-        enemy = enemySpecifier(6, 36, 10, 'GOBLIN', 5)
+        enemy = enemySpecifier(6, 36, 10, 'GOBLIN', 5, 60)
     elif randomenemyint <= 100:
-        enemy = enemySpecifier(9, 45, 11, 'THIEF', 10)
+        enemy = enemySpecifier(9, 45, 11, 'THIEF', 10, 80)
     return enemy
 
 def characterChoice(): # Character Choice
@@ -93,7 +97,7 @@ def characterChoice(): # Character Choice
     while cchoice:
         classinput = input().lower()
         if classinput == 'berserker':
-            player = Characterinfoclass(3, 3, 45, 45, None, None, 3, 0)
+            player = Characterinfoclass(3, 3, 45, 45, None, None, 3, 0, 75)
             player.inventory = {
             'WOODEN SWORD' : 'EQUIPPED'
             }
@@ -102,7 +106,7 @@ def characterChoice(): # Character Choice
             }
             cchoice = False
         elif classinput == 'protector':
-            player = Characterinfoclass(3, 3, 60, 60, None, None, 0, 3)
+            player = Characterinfoclass(3, 3, 60, 60, None, None, 0, 3, 80)
             player.inventory = {
             'WOODEN SHIELD' : 'EQUIPPED'
             }
@@ -188,7 +192,7 @@ def adventure(player):
 
 def dayChoice(player): # Day option
     choiceoflife = 'What should I do today?'
-    dayinfo = 'ADVENTURE, ARENA, STORE, INVENTORY'
+    dayinfo = 'ADVENTURE, ARENA, STORE, INVENTORY, STATUS'
     invinfo = 'EQUIP, UNEQUIP, EXIT'
     unequipfirst = 'Unequip your {0} first!'
     print(choiceoflife)
@@ -223,13 +227,13 @@ def dayChoice(player): # Day option
                                 print('This item is already equipped!')
                             else:
                                 if equipinput == 'WOODEN SWORD':
-                                    Characterinfoclass.equipFunctionATK(player, 'HAND1', 'weapon', 'WOODEN SWORD', 1, unequipfirst, equipinput)
+                                    Characterinfoclass.equipFunctionATK(player, 'HAND1', 'weapon', 'WOODEN SWORD', 1, 75, unequipfirst, equipinput)
                                 elif equipinput == 'WOODEN SHIELD':
                                     Characterinfoclass.equipFunctionDEF(player, 'HAND2', 'shield', 'WOODEN SHIELD', 1, unequipfirst, equipinput)
                                 elif equipinput == 'LEATHER ARMOR SET':
                                     Characterinfoclass.equipFunctionDEF(player, 'BODY', 'armor', 'LEATHER ARMOR SET', 2, unequipfirst, equipinput)
                                 elif equipinput == 'IRON SWORD':
-                                    Characterinfoclass.equipFunctionATK(player, 'HAND1', 'weapon', 'IRON SWORD', 2, unequipfirst, equipinput)
+                                    Characterinfoclass.equipFunctionATK(player, 'HAND1', 'weapon', 'IRON SWORD', 2, 65, unequipfirst, equipinput)
                         elif equipinput == 'EXIT':
                                 equipchoice = False
                                 print(player.inventory)
@@ -246,13 +250,13 @@ def dayChoice(player): # Day option
                             if player.inventory[unequipinput] == 'EQUIPPED':
                                 player.inventory[unequipinput] = 'UNEQUIPPED'
                                 if unequipinput == 'WOODEN SWORD':
-                                    Characterinfoclass.unequipFunctionATK(player, 'HAND1', 1)
+                                    Characterinfoclass.unequipFunctionATK(player, 'HAND1', 1, 80)
                                 elif unequipinput == 'WOODEN SHIELD':
                                     Characterinfoclass.unequipFunctionDEF(player, 'HAND2', 1)
                                 elif unequipinput == 'LEATHER ARMOR SET':
                                     Characterinfoclass.unequipFunctionDEF(player, 'BODY', 2)
                                 elif unequipinput == 'IRON SWORD':
-                                    Characterinfoclass.unequipFunctionATK(player, 'HAND1', 2)
+                                    Characterinfoclass.unequipFunctionATK(player, 'HAND1', 2, 80)
                                 print('You have unequipped the item!')
                             elif player.inventory[unequipinput] == 'UNEQUIPPED':
                                 print('This item is already unequipped!')
@@ -265,12 +269,21 @@ def dayChoice(player): # Day option
                     print(dayinfo)
                 else:
                     print('Please input the right command:')
+
+        elif takeyourtime == 'status':
+            print('HP = ' + str(player.PHP))
+            print('Max ATK = ' + str(player.PATK + player.PATKBonus))
+            print('Min ATK = ' + str(player.PATKBonus))
+            print('Max DEF = ' + str(player.PDEF + player.PDEFBonus))
+            print('Min DEF = ' + str(player.PDEFBonus))
+            print('Current Hitchance = ' + str(player.hitchance) + '%')
+            print(dayinfo)
         else:
             print('Please input the right command:')
             print(dayinfo)
 
 def store(player, dayinfo): # Store option
-    storeoption = '1 = WOODEN SWORD (10 gold, +1 ATK)\n2 = WOODEN SHIELD (15 gold, +1 DEF)\n3 = LEATHER ARMOR SET (30 gold, +2 DEF)\n4 = IRON SWORD (25 GOLD, +1 ATK)\nIf you are done, please EXIT the store.'
+    storeoption = '1 = WOODEN SWORD (10 gold, +1 ATK, 75% Hit Chance)\n2 = WOODEN SHIELD (15 gold, +1 DEF)\n3 = LEATHER ARMOR SET (30 gold, +2 DEF)\n4 = IRON SWORD (25 GOLD, +1 ATK, 65% Hit Chance)\nIf you are done, please EXIT the store.'
     itemdenied = 'You already have this item!'
     itemnocash = 'You dont have enough GOLD!'
     print('What should I buy?')
@@ -299,19 +312,19 @@ def store(player, dayinfo): # Store option
 # Enemy Choice function
 def badplayerChoice(player):
     print('Choose an enemy to fight: (or EXIT)')
-    enemyinfochoice = 'RAT (ATK = 3, HP = 21, EXP = 5, GOLD = 2)\nGOBLIN (ATK = 6, HP = 36, EXP = 10, GOLD = 5)\nTHIEF (ATK = 9, HP = 45, EXP = 11, GOLD = 10)'
+    enemyinfochoice = 'RAT (ATK = 3, HP = 21, EXP = 5, GOLD = 2, Hitchance = 50)\nGOBLIN (ATK = 6, HP = 36, EXP = 10, GOLD = 5, Hitchance = 60)\nTHIEF (ATK = 9, HP = 45, EXP = 11, GOLD = 10, Hitchance = 80)'
     print(enemyinfochoice)
     echoice = True
     while echoice:
         enemyinput = input().lower()
         if enemyinput == 'rat':
-            enemy = enemySpecifier(3, 21, 5, 'RAT', 2)
+            enemy = enemySpecifier(3, 21, 5, 'RAT', 2, 50)
             echoice = False
         elif enemyinput == 'goblin':
-            enemy = enemySpecifier(6, 36, 10, 'GOBLIN', 5)
+            enemy = enemySpecifier(6, 36, 10, 'GOBLIN', 5, 60)
             echoice = False
         elif enemyinput == 'thief':
-            enemy = enemySpecifier(9, 45, 11, 'THIEF', 10)
+            enemy = enemySpecifier(9, 45, 11, 'THIEF', 10, 80)
             echoice = False
         elif enemyinput == 'exit':
             echoice = False
@@ -323,8 +336,13 @@ def badplayerChoice(player):
 
 # Fight function
 def fightPhase(player, enemy):
-    playeratk = player.PATK + player.PATKBonus
-    playerdef = player.PDEF + player.PDEFBonus
+    playeratkmin = player.PATKBonus
+    playeratkmax = player.PATK + player.PATKBonus
+    playerdefmin = player.PDEFBonus
+    playerdefmax = player.PDEF + player.PDEFBonus
+    if playeratkmin == 0:
+        playeratkmin += 1
+    hitchance = player.hitchance
     while enemy['EHP'] > 0:
         if player.PHPActive <= 0:
             print('You died!')
@@ -338,30 +356,39 @@ def fightPhase(player, enemy):
         eatkcalc = 0 # Enemy's Attack value
         fightinput = input().lower()
         if fightinput == 'attack': # attack option
-            patkcalc = random.randint(0, playeratk)
+            patkcalc = random.randint(playeratkmin, playeratkmax)
+            phitchance = random.randint(0, 100)
             eatkcalc = random.randint(0, enemy['EATK'])
-            if patkcalc == 0:
+            ehitchance = random.randint(0, 100)
+            if phitchance > hitchance:
                 player.PHPActive = player.PHPActive - eatkcalc
                 print('You missed your attack, and the enemy hit you for {0} damage!'.format(str(eatkcalc)))
+            elif phitchance > hitchance and ehitchance > enemy['Ehitchance']:
+                print('Both of you missed your attack!')
+            elif ehitchance > enemy['Ehitchance']:
+                enemy['EHP'] = enemy['EHP'] - patkcalc
+                print('You hit your an enemy, and dealt {0} damage!'.format(str(patkcalc)))
+                print('The enemy missed their attack!')
             else:
                 enemy['EHP'] = enemy['EHP'] - patkcalc
                 print('You hit your an enemy, and dealt {0} damage!'.format(str(patkcalc)))
                 player.PHPActive = player.PHPActive - eatkcalc
                 print('The enemy dealt {0} damage!'.format(str(eatkcalc)))
         elif fightinput == 'defend': # defend option
-            pdefcalc = random.randint(0, playerdef)
+            pdefcalc = random.randint(playerdefmin, playerdefmax)
             eatkcalc = random.randint(0, enemy['EATK'])
+            ehitchance = random.randint(0, 100)
             if pdefcalc == 0:
                 player.PHPActive = player.PHPActive - eatkcalc
                 print('You were too slow, and the enemy hit you for {0} damage!'.format(str(eatkcalc)))
+            elif ehitchance > enemy['Ehitchance']:
+                print('Even though you defended, the enemy missed their attack!')
             else:
                 if pdefcalc > eatkcalc:
-                    pdefcalc = eatkcalc
-                    player.PHPActive = player.PHPActive - (eatkcalc - pdefcalc)
-                    print('You defended against an enemy, and deflected {0} damage!'.format(str(pdefcalc)))
+                    print('You defended against an enemy, and fully deflected {0} damage!'.format(str(pdefcalc)))
                 else:
                     player.PHPActive = player.PHPActive - (eatkcalc - pdefcalc)
-                    print('You defended against an enemy, and deflected {0} damage!'.format(str(pdefcalc)))
+                    print('You defended against an enemy, and deflected {0} damage! But you took the remaining {1} damage!'.format(str(pdefcalc), str(eatkcalc - pdefcalc)))
         else:
             print('Please input the right command.')
     else:
