@@ -316,6 +316,7 @@ def dayChoice(player, levelos): # Day option
             print('Current Class: ' + player.classname)
             print('LVL = ' + str(levelos.LVL))
             print('EXP = ' + str(levelos.EXP + levelos.LVLRequirements))
+            print('EXP to next level = ' + str(levelos.LVLRequirements))
             print('GOLD = ' + str(levelos.GOLD))
             print('HP = ' + str(player.PHP))
             print('Max ATK = ' + str(player.PATK + player.PATKBonus))
@@ -417,7 +418,7 @@ def fightPhase(player, enemy): # Basically fight code
         if player.PHPActive <= 0:
             print('You died!')
             player.PHPActive = player.PHP
-            characterChoice()
+            dataLoad()
             break
         print('What should I do? Current Enemy: {0}, Enemy HP: {1}, Your HP: {2}/{3}'.format(enemy['EName'].upper(), str(enemy['EHP']), str(player.PHPActive), str(player.PHP)))
         print('(A)TTACK, (D)EFEND')
