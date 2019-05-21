@@ -1,4 +1,4 @@
-import random
+import random, pickle, os
 
 # Stats
 class Levelstats: #Level stats function
@@ -8,10 +8,11 @@ class Levelstats: #Level stats function
         self.EXP = EXP
         self.GOLD = GOLD
 
-levelos = Levelstats(1, 30, -30, 0)
+levelos = Levelstats(1, 27, -27, 0)
 
 class Characterinfoclass: # Class choice function
-    def __init__(self, PATK, PDEF, PHP, PHPActive, inventory, inventoryslots, PATKBonus, PDEFBonus, hitchance): 
+    def __init__(self, classname, PATK, PDEF, PHP, PHPActive, inventory, inventoryslots, PATKBonus, PDEFBonus, hitchance):
+        self.classname = classname
         self.PATK = PATK
         self.PDEF = PDEF
         self.PHP = PHP
@@ -22,7 +23,7 @@ class Characterinfoclass: # Class choice function
         self.PDEFBonus = PDEFBonus
         self.hitchance = hitchance
 
-    def equipFunctionATK(self, slot, slottype, name, bonusvalue, hitchance, unequipfirst, equipinput):
+    def equipFunctionATK(self, slot, slottype, name, bonusvalue, hitchance, unequipfirst, equipinput): # Equip Function for items that increases ATK
         if slot in self.inventoryslots:
             print(unequipfirst.format(slottype))
         else:
@@ -32,7 +33,7 @@ class Characterinfoclass: # Class choice function
             self.inventory[equipinput] = 'EQUIPPED'
             print('You have equipped the item!')
     
-    def equipFunctionDEF(self, slot, slottype, name, bonusvalue, unequipfirst, equipinput):
+    def equipFunctionDEF(self, slot, slottype, name, bonusvalue, unequipfirst, equipinput): # Equip Function for items that increases DEF
         if slot in self.inventoryslots:
             print(unequipfirst.format(slottype))
         else:
@@ -41,16 +42,16 @@ class Characterinfoclass: # Class choice function
             self.inventory[equipinput] = 'EQUIPPED'
             print('You have equipped the item!')
 
-    def unequipFunctionATK(self, slot, bonusvalue, hitchance):
+    def unequipFunctionATK(self, slot, bonusvalue, hitchance): # Unequip Function for items that increases ATK
         del self.inventoryslots[slot]
         self.PATKBonus -= bonusvalue
         self.hitchance = hitchance
 
-    def unequipFunctionDEF(self, slot, bonusvalue):
+    def unequipFunctionDEF(self, slot, bonusvalue): # Unequip Function for items that increases DEF
         del self.inventoryslots[slot]
         self.PDEFBonus -= bonusvalue
 
-    def storeFunction(self, name, costvalue, itemdenied, storeoption, itemnocash):
+    def storeFunction(self, name, costvalue, itemdenied, storeoption, itemnocash): # Defines what item was bought and the price for it
         if levelos.GOLD >= costvalue:
             if name in self.inventory:
                 print(itemdenied)
@@ -64,7 +65,7 @@ class Characterinfoclass: # Class choice function
             print(itemnocash)
             print(storeoption)
     
-    def itemDrop(self, name):
+    def itemDrop(self, name): # Item drop event from ADVENTURE
         self.inventory[name] = 'UNEQUIPPED'
         print('It is a {0}!'.format(name))
 
@@ -79,7 +80,7 @@ def enemySpecifier(ATKValue, HPValue, EXPValue, Name, GOLDValue, Ehitchance):
     }
     return enemy
 
-def randomEnemy():
+def randomEnemy(): # Random enemy chance from ADVENTURE
     randomenemyint = random.randint(0, 100)
     if randomenemyint <= 60:
         enemy = enemySpecifier(3, 21, 5, 'RAT', 2, 50)
@@ -91,13 +92,13 @@ def randomEnemy():
 
 def characterChoice(): # Character Choice
     print('Choose your class:')
-    classinfo = 'BERSERKER (ATK = 6, DEF = 3, HP = 45)\nPROTECTOR (ATK = 3, DEF = 6, HP = 60)'
+    classinfo = '(B)ERSERKER (ATK = 4, DEF = 3, HP = 45)\n(P)ROTECTOR (ATK = 3, DEF = 4, HP = 60)'
     print(classinfo)
     cchoice = True
     while cchoice:
         classinput = input().lower()
-        if classinput == 'berserker':
-            player = Characterinfoclass(3, 3, 45, 45, None, None, 3, 0, 75)
+        if classinput == 'b': # Berserker class choice
+            player = Characterinfoclass('Berserker', 3, 3, 45, 45, None, None, 1, 0, 75)
             player.inventory = {
             'WOODEN SWORD' : 'EQUIPPED'
             }
@@ -105,8 +106,8 @@ def characterChoice(): # Character Choice
             'HAND1' : 'WOODEN SWORD'
             }
             cchoice = False
-        elif classinput == 'protector':
-            player = Characterinfoclass(3, 3, 60, 60, None, None, 0, 3, 80)
+        elif classinput == 'p': # Protector class choice
+            player = Characterinfoclass('Protector', 3, 3, 60, 60, None, None, 0, 1, 80)
             player.inventory = {
             'WOODEN SHIELD' : 'EQUIPPED'
             }
@@ -119,25 +120,67 @@ def characterChoice(): # Character Choice
             print(classinfo)
     return player
 
-def adventure(player):
+def dataLoad(): # Data load function
+    player = Characterinfoclass(None, 0, 0, 0, 0, None, None, 0, 0, 0)
+    wyltgload = 'Would you like to load your save data? (Y/N)'
+    loadchoice = True
+    while loadchoice:
+        print(wyltgload)
+        loadquestion = input().lower()
+        if loadquestion == 'y': # Load choice
+            if os.path.getsize("rpg stuff//savedata.txt") <= 0:
+                print('There is nothing to load!')
+                loadchoice = False
+                player = characterChoice()
+            else:
+                f= open("rpg stuff//savedata.txt", "r")
+                invfile = "rpg stuff//invdata.txt"
+                infile = open(invfile, 'rb')
+                levelos.LVL = int(f.readline())
+                levelos.LVLRequirements = int(f.readline())
+                levelos.EXP = int(f.readline())
+                levelos.GOLD = int(f.readline())
+                player.classname = f.readline()
+                player.PATK = int(f.readline())
+                player.PDEF = int(f.readline())
+                player.PHP = int(f.readline())
+                player.PHPActive = int(f.readline())
+                player.PATKBonus = int(f.readline())
+                player.PDEFBonus = int(f.readline())
+                player.hitchance = int(f.readline())
+                invdict = pickle.load(infile)
+                player.inventory = invdict['inv']
+                player.inventoryslots = invdict['slt']
+                f.close()
+                infile.close()
+                loadchoice = False
+                print('Loaded!')
+        elif loadquestion == 'n':
+            loadchoice = False
+            player = characterChoice()
+        else:
+            pass
+    return player
+
+def adventure(player): # Basically main menu
     wherewyltg = 'Where would you like to go?'
-    locations = 'WOODS, EXIT'
+    locations = '(W)OODS, (E)XIT'
     rightcommand = 'Please input the right command:'
-    whattodo = 'WALK, EXIT'
+    whattodo = '(W)ALK, (E)XIT'
     whatshould = 'What should I do?'
     print(wherewyltg)
     print(locations)
     lchoice = True
     while lchoice:
         locationchoice = input().lower()
-        if locationchoice == 'woods':
+        if locationchoice == 'w': # Woods Location choice
             lchoice = False
             wanderingaround = True
             print(whatshould)
             while wanderingaround:
                 print(whattodo)
                 decision = input().lower()
-                if decision == 'walk':
+                if decision == 'w': # Walk choice
                     print('You move forward.')
                     randomevent = random.randint(0, 100)
                     if randomevent <= 40:
@@ -176,51 +219,51 @@ def adventure(player):
                     elif randomevent <= 100:
                         print('Nothing happens.')
                         print(whatshould)
-                elif decision == 'exit':
+                elif decision == 'e': # Exit to location choice
                     wanderingaround = False
                     print(wherewyltg)
                     print(locations)
                     lchoice = True
                 else:
                     print(rightcommand)
-        elif locationchoice == 'exit':
+        elif locationchoice == 'e': # Exit to menu
             lchoice = False
-            dayChoice(player)
+            dayChoice(player, levelos)
         else:
             print(rightcommand)
             print(locations)
 
-def dayChoice(player): # Day option
+def dayChoice(player, levelos): # Day option
     choiceoflife = 'What should I do today?'
-    dayinfo = 'ADVENTURE, ARENA, STORE, INVENTORY, STATUS'
-    invinfo = 'EQUIP, UNEQUIP, EXIT'
+    dayinfo = 'A(D)VENTURE, (A)RENA, (S)TORE, (I)NVENTORY, S(T)ATUS, SA(V)E'
+    invinfo = 'E(Q)UIP, (U)NEQUIP, (E)XIT'
     unequipfirst = 'Unequip your {0} first!'
     print(choiceoflife)
     print(dayinfo)
     dchoice = True
     while dchoice:
         takeyourtime = input().lower()
-        if takeyourtime == 'adventure':
+        if takeyourtime == 'd': # Adventure choice
             adventure(player)
-        elif takeyourtime == 'arena':
+        elif takeyourtime == 'a': # Arena choice
             enemy = badplayerChoice(player)
             fightPhase(player, enemy)
             print(choiceoflife)
             print(dayinfo)
-        elif takeyourtime == 'store':
+        elif takeyourtime == 's': # Store choice
             store(player, dayinfo)
-        elif takeyourtime == 'inventory':
+        elif takeyourtime == 'i': # Inventory choice
             print(player.inventory)
             invchoice = True
             while invchoice:
                 print(invinfo)
                 invinput = input().lower()
-                if invinput == 'equip':
+                if invinput == 'q': # Equip choice
                     print('What would you like to equip?')
                     equipchoice = True
                     while equipchoice:
                         print(player.inventory)
-                        print('If you are done, please EXIT this action.')
+                        print('If you are done, please (E)XIT this action.')
                         equipinput = input().upper()
                         if equipinput in player.inventory:
                             if player.inventory[equipinput] == 'EQUIPPED':
@@ -234,17 +277,17 @@ def dayChoice(player): # Day option
                                     Characterinfoclass.equipFunctionDEF(player, 'BODY', 'armor', 'LEATHER ARMOR SET', 2, unequipfirst, equipinput)
                                 elif equipinput == 'IRON SWORD':
                                     Characterinfoclass.equipFunctionATK(player, 'HAND1', 'weapon', 'IRON SWORD', 2, 65, unequipfirst, equipinput)
-                        elif equipinput == 'EXIT':
+                        elif equipinput == 'E':
                                 equipchoice = False
                                 print(player.inventory)
                         else:
                             print('Please input the right item:')
-                elif invinput == 'unequip':
+                elif invinput == 'u': # Unequip Choice
                     print('What would you like to unequip?')
                     unequipchoice = True
                     while unequipchoice:
                         print(player.inventory)
-                        print('If you are done, please EXIT this action.')
+                        print('If you are done, please (E)XIT this action.')
                         unequipinput = input().upper()
                         if unequipinput in player.inventory:
                             if player.inventory[unequipinput] == 'EQUIPPED':
@@ -260,17 +303,20 @@ def dayChoice(player): # Day option
                                 print('You have unequipped the item!')
                             elif player.inventory[unequipinput] == 'UNEQUIPPED':
                                 print('This item is already unequipped!')
-                        elif unequipinput == 'EXIT':
+                        elif unequipinput == 'E':
                             unequipchoice = False
                             print(player.inventory)
-                elif invinput == 'exit':
+                elif invinput == 'e': # Exit to menu
                     invchoice = False
                     print(choiceoflife)
                     print(dayinfo)
                 else:
                     print('Please input the right command:')
-
-        elif takeyourtime == 'status':
+        elif takeyourtime == 't': # Status choice
+            print('Current Class: ' + player.classname)
+            print('LVL = ' + str(levelos.LVL))
+            print('EXP = ' + str(levelos.EXP + levelos.LVLRequirements))
+            print('GOLD = ' + str(levelos.GOLD))
             print('HP = ' + str(player.PHP))
             print('Max ATK = ' + str(player.PATK + player.PATKBonus))
             print('Min ATK = ' + str(player.PATKBonus))
@@ -278,12 +324,37 @@ def dayChoice(player): # Day option
             print('Min DEF = ' + str(player.PDEFBonus))
             print('Current Hitchance = ' + str(player.hitchance) + '%')
             print(dayinfo)
+        elif takeyourtime == 'v': # Save choice
+            f= open("rpg stuff//savedata.txt", "w")
+            invfile = "rpg stuff//invdata.txt"
+            outfile = open(invfile, 'wb')
+            f.write(str(levelos.LVL) + '\n')
+            f.write(str(levelos.LVLRequirements) + '\n')
+            f.write(str(levelos.EXP) + '\n')
+            f.write(str(levelos.GOLD) + '\n')
+            f.write(player.classname + '\n')
+            f.write(str(player.PATK) + '\n')
+            f.write(str(player.PDEF) + '\n')
+            f.write(str(player.PHP) + '\n')
+            f.write(str(player.PHPActive) + '\n')
+            f.write(str(player.PATKBonus) + '\n')
+            f.write(str(player.PDEFBonus) + '\n')
+            f.write(str(player.hitchance))
+            inventorystuff = {
+            'inv' : player.inventory,
+            'slt' : player.inventoryslots
+            }
+            pickle.dump(inventorystuff, outfile)
+            f.close()
+            outfile.close()
+            print('Saved!')
+            print(dayinfo)
         else:
             print('Please input the right command:')
             print(dayinfo)
 
 def store(player, dayinfo): # Store option
-    storeoption = '1 = WOODEN SWORD (10 gold, +1 ATK, 75% Hit Chance)\n2 = WOODEN SHIELD (15 gold, +1 DEF)\n3 = LEATHER ARMOR SET (30 gold, +2 DEF)\n4 = IRON SWORD (25 GOLD, +1 ATK, 65% Hit Chance)\nIf you are done, please EXIT the store.'
+    storeoption = '1 = WOODEN SWORD (10 gold, +1 ATK, 75% Hit Chance)\n2 = WOODEN SHIELD (15 gold, +1 DEF)\n3 = LEATHER ARMOR SET (30 gold, +2 DEF)\n4 = IRON SWORD (25 GOLD, +1 ATK, 65% Hit Chance)\nIf you are done, please (E)XIT the store.'
     itemdenied = 'You already have this item!'
     itemnocash = 'You dont have enough GOLD!'
     print('What should I buy?')
@@ -300,7 +371,7 @@ def store(player, dayinfo): # Store option
             Characterinfoclass.storeFunction(player, 'LEATHER ARMOR SET', 30, itemdenied, storeoption, itemnocash)
         elif sinput == '4':
             Characterinfoclass.storeFunction(player, 'IRON SWORD', 25, itemdenied, storeoption, itemnocash)
-        elif sinput == 'exit':
+        elif sinput == 'e':
             print('What should I do today?')
             print(dayinfo)
             break
@@ -309,9 +380,8 @@ def store(player, dayinfo): # Store option
             print(storeoption)
     return player
 
-# Enemy Choice function
-def badplayerChoice(player):
-    print('Choose an enemy to fight: (or EXIT)')
+def badplayerChoice(player): # Enemy Choice function
+    print('Choose an enemy to fight: (or (E)XIT)')
     enemyinfochoice = 'RAT (ATK = 3, HP = 21, EXP = 5, GOLD = 2, Hitchance = 50)\nGOBLIN (ATK = 6, HP = 36, EXP = 10, GOLD = 5, Hitchance = 60)\nTHIEF (ATK = 9, HP = 45, EXP = 11, GOLD = 10, Hitchance = 80)'
     print(enemyinfochoice)
     echoice = True
@@ -326,16 +396,16 @@ def badplayerChoice(player):
         elif enemyinput == 'thief':
             enemy = enemySpecifier(9, 45, 11, 'THIEF', 10, 80)
             echoice = False
-        elif enemyinput == 'exit':
+        elif enemyinput == 'e': # Exit to menu
             echoice = False
-            dayChoice(player)
+            dayChoice(player, levelos)
         else:
             print('Please input the right enemy name:')
             print(enemyinfochoice)
     return enemy
 
 # Fight function
-def fightPhase(player, enemy):
+def fightPhase(player, enemy): # Basically fight code
     playeratkmin = player.PATKBonus
     playeratkmax = player.PATK + player.PATKBonus
     playerdefmin = player.PDEFBonus
@@ -350,12 +420,12 @@ def fightPhase(player, enemy):
             characterChoice()
             break
         print('What should I do? Current Enemy: {0}, Enemy HP: {1}, Your HP: {2}/{3}'.format(enemy['EName'].upper(), str(enemy['EHP']), str(player.PHPActive), str(player.PHP)))
-        print('ATTACK, DEFEND')
+        print('(A)TTACK, (D)EFEND')
         patkcalc = 0 # Your Attack value
         pdefcalc = 0 # Your Defense value
         eatkcalc = 0 # Enemy's Attack value
         fightinput = input().lower()
-        if fightinput == 'attack': # attack option
+        if fightinput == 'a': # Attack choice
             patkcalc = random.randint(playeratkmin, playeratkmax)
             phitchance = random.randint(0, 100)
             eatkcalc = random.randint(0, enemy['EATK'])
@@ -374,7 +444,7 @@ def fightPhase(player, enemy):
                 print('You hit your an enemy, and dealt {0} damage!'.format(str(patkcalc)))
                 player.PHPActive = player.PHPActive - eatkcalc
                 print('The enemy dealt {0} damage!'.format(str(eatkcalc)))
-        elif fightinput == 'defend': # defend option
+        elif fightinput == 'd': # Defend Choice
             pdefcalc = random.randint(playerdefmin, playerdefmax)
             eatkcalc = random.randint(0, enemy['EATK'])
             ehitchance = random.randint(0, 100)
@@ -406,7 +476,7 @@ def fightPhase(player, enemy):
             print(lvlupinfo)
             luchoice = True
             while luchoice:
-                lvlupinput = input().lower()
+                lvlupinput = input().lower() # This is where you upgrade your Max ATK DEF and HP
                 if lvlupinput == 'atk':
                     player.PATK += 1
                     luchoice = False
@@ -424,9 +494,9 @@ def fightPhase(player, enemy):
         player.PHPActive = player.PHP
 
 def main():
-    player = characterChoice()
+    player = dataLoad()
     while levelos.LVL < 10:
-        dayChoice(player)
+        dayChoice(player, levelos)
     if levelos.LVL == 10:
         print('You won the game!')
 
