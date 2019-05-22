@@ -194,25 +194,25 @@ def adventure(player): # Basically main menu
                         if randomitem <= 70:
                             if 'WOODEN SWORD' in player.inventory:
                                 print('You already have this item, so you sell it for {} GOLD!'.format(5))
-                                player.GOLD += 5
+                                levelos.GOLD += 5
                             else:
                                 Characterinfoclass.itemDrop(player, 'WOODEN SWORD')
                         elif randomitem <= 90:
                             if 'WOODEN SHIELD' in player.inventory:
                                 print('You already have this item, so you sell it for {} GOLD!'.format(7))
-                                player.GOLD += 7
+                                levelos.GOLD += 7
                             else:
                                 Characterinfoclass.itemDrop(player, 'WOODEN SHIELD')
                         elif randomitem <= 97:
                             if 'IRON SWORD' in player.inventory:
                                 print('You already have this item, so you sell it for {} GOLD!'.format(12))
-                                player.GOLD += 12
+                                levelos.GOLD += 12
                             else:
                                 Characterinfoclass.itemDrop(player, 'IRON SWORD')
                         elif randomitem <= 100:
                             if 'LEATHER ARMOR SET' in player.inventory:
                                 print('You already have this item, so you sell it for {} GOLD!'.format(15))
-                                player.GOLD += 15
+                                levelos.GOLD += 15
                             else:
                                 Characterinfoclass.itemDrop(player, 'LEATHER ARMOR SET')
                         print(whatshould)
