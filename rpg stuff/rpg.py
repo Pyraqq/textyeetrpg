@@ -69,6 +69,18 @@ class Characterinfoclass: # Class choice function
         self.inventory[name] = 'UNEQUIPPED'
         print('It is a {0}!'.format(name))
 
+class Quests:
+    def __init__(self, name, qtype, what, quantity, reward, GOLDreward, XPreward):
+        self.name = name
+        self.qtype = qtype
+        self.what = what
+        self.quantity = quantity
+        self.reward = reward
+        self.GOLDreward = GOLDreward
+        self.XPreward = XPreward
+
+quest = Quests('None', 'None', 'None', 0, 'None', 0, 0)
+
 def enemySpecifier(ATKValue, HPValue, EXPValue, Name, GOLDValue, Ehitchance):
     enemy = {
     'EATK' : ATKValue,
@@ -140,7 +152,7 @@ def dataLoad(): # Data load function
                 levelos.LVLRequirements = int(f.readline())
                 levelos.EXP = int(f.readline())
                 levelos.GOLD = int(f.readline())
-                player.classname = f.readline()
+                player.classname = f.readline().rstrip()
                 player.PATK = int(f.readline())
                 player.PDEF = int(f.readline())
                 player.PHP = int(f.readline())
@@ -148,6 +160,13 @@ def dataLoad(): # Data load function
                 player.PATKBonus = int(f.readline())
                 player.PDEFBonus = int(f.readline())
                 player.hitchance = int(f.readline())
+                quest.name = f.readline().rstrip()
+                quest.qtype = f.readline().rstrip()
+                quest.what = f.readline().rstrip()
+                quest.quantity = int(f.readline())
+                quest.reward = f.readline().rstrip()
+                quest.GOLDreward = int(f.readline())
+                quest.XPreward = int(f.readline())
                 invdict = pickle.load(infile)
                 player.inventory = invdict['inv']
                 player.inventoryslots = invdict['slt']
@@ -162,7 +181,7 @@ def dataLoad(): # Data load function
             pass
     return player
 
-def adventure(player): # Basically main menu
+def adventure(player, quest): # Basically main menu
     wherewyltg = 'Where would you like to go?'
     locations = '(W)OODS, (E)XIT'
     rightcommand = 'Please input the right command:'
@@ -186,7 +205,7 @@ def adventure(player): # Basically main menu
                     if randomevent <= 40:
                         print('You have encountered an enemy!')
                         enemy = randomEnemy()
-                        fightPhase(player, enemy)
+                        fightPhase(player, enemy, quest)
                         print(whatshould)
                     elif randomevent <= 45:
                         print('You have found an item!')
@@ -233,9 +252,64 @@ def adventure(player): # Basically main menu
             print(rightcommand)
             print(locations)
 
+def questFunction(choiceoflife, dayinfo):
+    chooseyourfate = 'Please choose a quest you want to start, check your (C)urrent quest or (E)XIT.'
+    questlist = '1 = Kill 4 RATS, 2 = Kill 2 THIEVES'
+    acceptsuccesful = 'You have sucessfully accepted this quest!'
+    nowdoyou = 'Do you wish to accept this quest? y/n'
+    novalid = 'That is not a valid answer!'
+    noquest = 'There is no current quest!'
+    questchoice = True
+    while questchoice:
+        print(chooseyourfate)
+        print(questlist)
+        questinput = input().lower()
+        if questinput == '1':
+            acceptchoice = True
+            while acceptchoice:
+                print('Quest details:\nKill 4 RATS in any way.\nReward: 20 GOLD and 10 EXP')
+                print(nowdoyou)
+                acceptinput = input().lower()
+                if acceptinput == 'y':
+                    acceptchoice = False
+                    quest.__init__('Kill 4 RATS', 'kill', 'RAT', 4, '20 GOLD and 10 EXP', 20, 10)
+                    print(acceptsuccesful)
+                elif acceptinput == 'n':
+                    acceptchoice = False
+                else:
+                    print(novalid)
+        elif questinput == '2':
+            acceptchoice = True
+            while acceptchoice:
+                print('Quest details:\nKill 2 THIEVES in any way.\nReward: 40 GOLD and 20 EXP')
+                print(nowdoyou)
+                acceptinput = input().lower()
+                if acceptinput == 'y':
+                    acceptchoice = False
+                    quest.__init__('Kill 2 THIEVES', 'kill', 'THIEF', 2, '40 GOLD and 20 EXP', 40, 20)
+                    print(acceptsuccesful)
+                elif acceptinput == 'n':
+                    acceptchoice = False
+                else:
+                    print(novalid)
+        elif questinput == 'c':
+            if quest.name == 'None':
+                print(noquest)
+            else:
+                print(quest.name)
+                print('Left: ' + str(quest.quantity))
+                print('Reward: ' + quest.reward)
+        elif questinput == 'e':
+            questchoice = False
+            print(choiceoflife)
+            print(dayinfo)
+        else:
+            print(novalid)
+    return quest
+
 def dayChoice(player, levelos): # Day option
     choiceoflife = 'What should I do today?'
-    dayinfo = 'A(D)VENTURE, (A)RENA, (S)TORE, (I)NVENTORY, S(T)ATUS, SA(V)E'
+    dayinfo = 'A(D)VENTURE, (A)RENA, (S)TORE, (I)NVENTORY, (Q)UESTS, S(T)ATUS, SA(V)E'
     invinfo = 'E(Q)UIP, (U)NEQUIP, (E)XIT'
     unequipfirst = 'Unequip your {0} first!'
     print(choiceoflife)
@@ -243,11 +317,13 @@ def dayChoice(player, levelos): # Day option
     dchoice = True
     while dchoice:
         takeyourtime = input().lower()
-        if takeyourtime == 'd': # Adventure choice
-            adventure(player)
+        if takeyourtime == 'q':
+            questFunction(choiceoflife, dayinfo)
+        elif takeyourtime == 'd': # Adventure choice
+            adventure(player, quest)
         elif takeyourtime == 'a': # Arena choice
             enemy = badplayerChoice(player)
-            fightPhase(player, enemy)
+            fightPhase(player, enemy, quest)
             print(choiceoflife)
             print(dayinfo)
         elif takeyourtime == 's': # Store choice
@@ -340,7 +416,14 @@ def dayChoice(player, levelos): # Day option
             f.write(str(player.PHPActive) + '\n')
             f.write(str(player.PATKBonus) + '\n')
             f.write(str(player.PDEFBonus) + '\n')
-            f.write(str(player.hitchance))
+            f.write(str(player.hitchance) + '\n')
+            f.write(quest.name + '\n')
+            f.write(quest.qtype + '\n')
+            f.write(quest.what + '\n')
+            f.write(str(quest.quantity) + '\n')
+            f.write(quest.reward + '\n')
+            f.write(str(quest.GOLDreward) + '\n')
+            f.write(str(quest.XPreward))
             inventorystuff = {
             'inv' : player.inventory,
             'slt' : player.inventoryslots
@@ -406,7 +489,7 @@ def badplayerChoice(player): # Enemy Choice function
     return enemy
 
 # Fight function
-def fightPhase(player, enemy): # Basically fight code
+def fightPhase(player, enemy, quest): # Basically fight code
     playeratkmin = player.PATKBonus
     playeratkmax = player.PATK + player.PATKBonus
     playerdefmin = player.PDEFBonus
@@ -455,7 +538,7 @@ def fightPhase(player, enemy): # Basically fight code
             elif ehitchance > enemy['Ehitchance']:
                 print('Even though you defended, the enemy missed their attack!')
             else:
-                if pdefcalc > eatkcalc:
+                if pdefcalc >= eatkcalc:
                     print('You defended against an enemy, and fully deflected {0} damage!'.format(str(pdefcalc)))
                 else:
                     player.PHPActive = player.PHPActive - (eatkcalc - pdefcalc)
@@ -465,6 +548,14 @@ def fightPhase(player, enemy): # Basically fight code
     else:
         levelos.EXP = levelos.EXP + enemy['EXPGain']
         levelos.GOLD = levelos.GOLD + enemy['GOLDGain']
+        if enemy['EName'] == quest.what:
+            quest.quantity -= 1
+        if quest.quantity == 0 and quest.qtype == 'kill':
+            levelos.EXP = levelos.EXP + quest.XPreward
+            levelos.GOLD = levelos.GOLD + quest.GOLDreward
+            print('Quest: ' + quest.name + ' complete!')
+            print('Reward: ' + quest.reward)
+            quest = Quests('None', 'None', 'None', 0, 'None', 0, 0)
         print('You won the fight! You gained {0} EXP and {1} GOLD!\nYour current EXP = {2}, Your current GOLD = {3}.'.format(str(enemy['EXPGain']), str(enemy['GOLDGain']), str(levelos.EXP + levelos.LVLRequirements), str(levelos.GOLD)))
         if levelos.EXP >= 0: # Level up if statement
             levelos.LVL += 1
